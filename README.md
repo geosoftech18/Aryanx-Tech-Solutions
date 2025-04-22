@@ -34,3 +34,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+I want to build a comprehensive job portal with inspiration from MichaelPage's website (https://www.michaelpage.com/). The portal should have three user roles: Admin, Candidate, and Recruiter. 
+
+Tech Stack Requirements:
+- Frontend: React, Next.js with Server Actions
+- State Management: Redux
+- UI Components: shadCN with TailwindCSS
+- Backend: Next.js API routes
+- Database: PrismaORM with MongoDB
+- API Documentation: Swagger
+- Asset Management: Cloudinary
+- TypeScript throughout the application
+
+The application should have all the pages listed in the provided sitemap with similar organization and professional styling.

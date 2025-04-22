@@ -1,0 +1,22 @@
+{
+    "HeroCarousalItem": [
+      {
+        "title": "Welcome to GeoSofTech",
+        "description": "Explore the best job opportunities tailored for you.",
+        "cta_button_text": "Get Started",
+        "heroImage": "/1.jpg"
+      },
+      {
+        "title": "Find Your Dream Job",
+        "description": "Connect with top companies and grow your career.",
+        "cta_button_text": "Explore Jobs",
+        "heroImage": "/1.jpg"
+      },
+      {
+        "title": "Join Our Community",
+        "description": "Be part of a thriving professional network.",
+        "cta_button_text": "Sign Up Now",
+        "heroImage": "/1.jpg"
+      }
+    ]
+  }

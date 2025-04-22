@@ -1,0 +1,6 @@
+
+Individual component : px-28 py-10
+
+// swagger api
+// cursor sub
+// image kit.io
