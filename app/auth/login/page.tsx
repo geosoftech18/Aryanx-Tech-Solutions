@@ -1,25 +1,24 @@
 "use client";
-import { useState } from "react";
+import { generateAndSendOTP } from "@/actions/auth/generateAndSendOTP";
+import { getRole } from "@/actions/auth/getRole";
+import { isEmailVerified } from "@/actions/auth/isEmailVerified";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Mail, Lock, Loader2, Linkedin } from "lucide-react";
-import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
-import { toast } from "react-hot-toast";
-import { signIn } from "next-auth/react";
-import { isEmailVerified } from "@/actions/auth/isEmailVerified";
-import { Role } from "@prisma/client";
-import { getRole } from "@/actions/auth/getRole";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
+  InputOTPSlot
 } from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Role } from "@prisma/client";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { generateAndSendOTP } from "@/actions/auth/generateAndSendOTP";
+import { Linkedin, Loader2, Lock, Mail } from "lucide-react";
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,6 +26,7 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState<Role>(Role.CANDIDATE);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ const Login = () => {
       }
 
       //   console.log(isEmailVerifiedResponse,getRoleResponse);
-
+      setRole(getRoleResponse.role);
       const sendOTPResponse: {
         success: boolean;
         role?: Role;
@@ -77,6 +77,7 @@ const Login = () => {
       }
       setShowOtpInput(true);
     } catch (error) {
+      console.log(error);
       toast.error("Some error occured while handling signin");
     } finally {
       setIsLoading(false);
@@ -98,8 +99,8 @@ const Login = () => {
         // redirect: false,
         email,
         otp,
-        role: "CANDIDATE",
-        callbackUrl:`${process.env.NEXT_PUBLIC_BASE_URL}/candidate`
+        role: role,
+        callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/${role}`,
       });
 
       if (res?.error) {
@@ -109,6 +110,7 @@ const Login = () => {
         // Redirect to dashboard or appropriate page
       }
     } catch (error) {
+      console.log(error);
       toast.error("Invalid OTP. Please try again.");
     } finally {
       setIsLoading(false);

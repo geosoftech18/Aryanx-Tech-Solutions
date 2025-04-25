@@ -1,5 +1,5 @@
 "use server";
-
+// basically this is used to get the role of the user when user is not logged in
 import prismadb from "@/lib/prismaDB";
 import { Role } from "@prisma/client";
 

@@ -1,8 +1,7 @@
-import CredentialsProvider from "next-auth/providers/credentials";
-import { NextAuthOptions } from "next-auth";
-import prismadb from "./prismaDB";
 import { Role } from "@prisma/client";
-import SendEmail from "./sendEmail";
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import prismadb from "./prismaDB";
 
 export const NEXT_AUTH_CONFIG: NextAuthOptions = {
   providers: [
@@ -50,8 +49,7 @@ export const NEXT_AUTH_CONFIG: NextAuthOptions = {
           id: user.id,
           name: user.firstname + " " + user.lastname,
           email: user.email,
-          role: user.role,
-          image: user.image,
+          role: user.role
         };
       },
     }),

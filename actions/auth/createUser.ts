@@ -18,11 +18,7 @@ export async function createUser({
   lastname,
   email,
   password,
-  role = Role.CANDIDATE,
-  image,
-  resume,
-  skills = [],
-  companyId,
+  role 
 }: UserType): Promise<{
   success: boolean;
   // user?: any;
@@ -30,7 +26,7 @@ export async function createUser({
 }> {
   try {
     // Validate required fields
-    if (!firstname || !lastname || !email || !password) {
+    if (!firstname || !lastname || !email || !password ||!role) {
       return {
         success: false,
         message: "Name, email, and password are required",
@@ -55,15 +51,6 @@ export async function createUser({
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Validate company exists if companyId is provided
-    if (companyId) {
-      const company = await prismadb.company.findUnique({
-        where: { id: companyId },
-      });
-      if (!company) {
-        return { success: false, message: "Company not found" };
-      }
-    }
 
     // Create user
     const user = await prismadb.user.create({
@@ -74,10 +61,6 @@ export async function createUser({
         email,
         password: hashedPassword,
         role,
-        image,
-        resume,
-        skills,
-        companyId,
         emailVerified: false,
       },
       select: {
@@ -87,8 +70,6 @@ export async function createUser({
         lastname: true,
         email: true,
         role: true,
-        image: true,
-        createdAt: true,
       },
     });
 

@@ -1,18 +1,21 @@
 "use client";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, Menu, X, User, Briefcase, Building2 } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
+import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
 
-const Navbar = () => {
+interface NavbarProps {
+  session: Session | null;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ session }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  const { data: session, status } = useSession();
 
   return (
     <header className="border-b border-slate-200 bg-white">
@@ -27,18 +30,14 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <Link
-              href="/jobs"
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
-            >
-              Find Jobs
-            </Link>
-            <Link
-              href="/employers"
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
-            >
-              For Employers
-            </Link>
+            {session && session.user.role && (
+              <Link
+                href={`/${session?.user.role}`}
+                className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+              >
+                Dashboard
+              </Link>
+            )}
             <Link
               href="/about"
               className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"

@@ -14,31 +14,52 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  firstname    String
-  middlename   String?
-  lastname     String
-  email        String        @unique
-  password     String
-  role         Role          @default(CANDIDATE)
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstname  String
+  middlename String?
+  lastname   String
+  email      String  @unique
+  password   String
+  role       Role    
 
-  candidateType CandidateType?
+  candidate Candidate? @relation("UserToCandidate")
 
-  image        String?
-  resume       String?
-  skills       String[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  applications Application[]
-  jobs         Job[]         @relation("EmployerJobs")
-  company      Company?
+  company Company? @relation("UserToCompany")
 
-  companyId    String?       @db.ObjectId
-  otp          String?
+  otp           String?
   // New fields for email verification
-  emailVerified Boolean     @default(false)
-  verifyToken   String?     @unique
+  emailVerified Boolean   @default(false)
+  verifyToken   String?   
   verifyExpires DateTime?
+}
+
+model Candidate {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId String @unique @db.ObjectId
+  user   User   @relation("UserToCandidate", fields: [userId], references: [id])
+
+  candidateType  CandidateType?
+  contact        String
+  education      Education[]
+  certifications Certification[]
+  WorkExperience WorkExperience[]
+  YOE            Int
+  skills         String[]
+  Bio            String
+  Address        Address?         @relation(name: "AddressToCandidate")
+  DOB            DateTime
+
+  resume String?
+
+  gender          Gender
+  LGBTQ           LGBTQ? //for LGBTQ candidates
+  employmentBreak String? //for women/employment break candidates
+  pwdCategory     PwdCategory? //for PWD candidates
+  applications    Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Company {
@@ -48,8 +69,10 @@ model Company {
   logo        String?
   website     String?
   employees   String?
+  industry    Industry
+  sector      Sector
   userId      String   @unique @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation("UserToCompany", fields: [userId], references: [id])
   jobs        Job[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -66,8 +89,8 @@ model Job {
   deadline     DateTime
   experience   String?
   skills       String[]
-  userId       String        @db.ObjectId
-  user         User          @relation("EmployerJobs", fields: [userId], references: [id])
+  isFeatured   Boolean       @default(false)
+  isActive     Boolean       @default(true)
   companyId    String        @db.ObjectId
   company      Company       @relation(fields: [companyId], references: [id])
   applications Application[]
@@ -79,12 +102,58 @@ model Application {
   id          String            @id @default(auto()) @map("_id") @db.ObjectId
   status      ApplicationStatus @default(PENDING)
   userId      String            @db.ObjectId
-  user        User              @relation(fields: [userId], references: [id])
   jobId       String            @db.ObjectId
   job         Job               @relation(fields: [jobId], references: [id])
   coverLetter String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  Candidate   Candidate?        @relation(fields: [candidateId], references: [id])
+  candidateId String?           @db.ObjectId
+}
+
+model Education {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId    String    @db.ObjectId
+  candidate      Candidate @relation(fields: [candidateId], references: [id])
+  degree         String
+  specialisation String
+  institution    String
+  passout_year   String
+  CGPA           Int
+}
+
+model Certification {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId    String    @db.ObjectId
+  candidate      Candidate @relation(fields: [candidateId], references: [id])
+  name           String
+  company        String
+  issueDate      DateTime
+  expirationDate DateTime
+}
+
+model WorkExperience {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId      String    @db.ObjectId
+  candidate        Candidate @relation(fields: [candidateId], references: [id])
+  name             String
+  position         String
+  startDate        DateTime
+  endDate          DateTime
+  currentlyWorking Boolean
+  jobDescription   String
+}
+
+model Address {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId String?   @db.ObjectId
+  candidate   Candidate @relation("AddressToCandidate", fields: [id], references: [id], onDelete: Cascade)
+  houseNo     Int
+  locality    String
+  pincode     Int
+  city        String
+  state       String
+  country     String
 }
 
 enum Role {
@@ -124,5 +193,71 @@ enum CandidateType {
   PWD
   LGBTQ
   WOMEN_RETURNING
+}
+
+enum Gender {
+  MALE
   FEMALE
+  PREFER_NOT_TO_SAY
+}
+
+enum LGBTQ {
+  NON_BINARY
+  TRANSGENDER
+  GENDERFLUID
+  AGENDER
+  TWO_SPIRIT
+  LESBIAN
+  GAY
+  BISEXUAL
+  PANSEXUAL
+  QUEER
+  INTERSEX
+  ASEXUAL
+  PREFER_NOT_TO_SAY
+  OTHER
+}
+
+enum PwdCategory {
+  PHYSICAL
+  VISUAL
+  HEARING
+  INTELLECTUAL
+  MENTAL_HEALTH
+  CHRONIC_ILLNESS
+  NEUROLOGICAL
+  LEARNING
+  SPEECH
+  DEVELOPMENTAL
+  AUTOIMMUNE
+  GENETIC
+  MULTIPLE
+  OTHER
+}
+
+enum Industry {
+  TECHNOLOGY
+  HEALTHCARE
+  FINANCE
+  EDUCATION
+  MANUFACTURING
+  RETAIL
+  ECOMMERCE
+  MEDIA
+  TELECOMMUNICATIONS
+  AUTOMOTIVE
+  CONSULTING
+  REAL_ESTATE
+  HOSPITALITY
+  AGRICULTURE
+  OTHER
+}
+
+enum Sector {
+  PUBLIC
+  PRIVATE
+  NON_PROFIT
+  GOVERNMENT
+  STARTUP
+  MULTINATIONAL
 }

@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { createUser } from "@/actions/auth/createUser";
+import { Role } from "@prisma/client";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -17,7 +18,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [userType, setUserType] = useState("candidate");
+  const [userType, setUserType] = useState<Role>(Role.CANDIDATE);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +43,8 @@ const Signup = () => {
          password: password,
          firstname:firstName, 
          middlename: midName,
-         lastname: lastName
+         lastname: lastName,
+         role:userType
       })
 
       if(res.success && res.message){
@@ -55,6 +57,7 @@ const Signup = () => {
       // Reset form or redirect to login
       // history.push("/login");
     } catch (error) {
+      console.log(error);
       toast.error("There was an error creating your account. Please try again.");
     } finally {
       setIsLoading(false);
@@ -69,22 +72,22 @@ const Signup = () => {
         <div className="max-w-[600px] mx-auto">
           <h2 className="text-2xl font-semibold text-gray-900 mb-1">Sign up</h2>
           <p className="text-sm text-gray-600 mb-8">
-            Enter your account details here
-          </p>
+            Enter your account details here + {userType}
+          </p> 
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <Label>I want to register as a:</Label>
               <RadioGroup
-                defaultValue="candidate"
+                defaultValue={Role.CANDIDATE}
                 value={userType}
-                onValueChange={setUserType}
+                onValueChange={(value)=>setUserType(value as Role)}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
               >
                 <div className="flex items-center space-x-2 bg-gray-50 p-3 rounded-md border border-gray-200">
-                  <RadioGroupItem value="candidate" id="candidate" />
+                  <RadioGroupItem value={Role.CANDIDATE} id={Role.CANDIDATE} />
                   <Label
-                    htmlFor="candidate"
+                    htmlFor={Role.CANDIDATE}
                     className="cursor-pointer flex items-center gap-2"
                   >
                     <User className="h-5 w-5 text-blue-600" />
@@ -92,13 +95,13 @@ const Signup = () => {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2 bg-gray-50 p-3 rounded-md border border-gray-200">
-                  <RadioGroupItem value="recruiter" id="recruiter" />
+                  <RadioGroupItem value={Role.EMPLOYER} id={Role.EMPLOYER}/>
                   <Label
-                    htmlFor="recruiter"
+                    htmlFor={Role.EMPLOYER}
                     className="cursor-pointer flex items-center gap-2"
                   >
                     <Briefcase className="h-5 w-5 text-blue-600" />
-                    <span>Recruiter</span>
+                    <span>Employer</span>
                   </Label>
                 </div>
               </RadioGroup>

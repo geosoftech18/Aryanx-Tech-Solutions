@@ -1,8 +1,6 @@
 "use server";
 
 import axios from "axios";
-import { z } from "zod";
-import { promises as fs } from "fs";
 
 type EmailResponse = {
   success: boolean;

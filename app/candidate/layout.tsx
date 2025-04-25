@@ -1,4 +1,3 @@
-import Navbar from "@/components/candidate/navbar"
 
 export default function CandidateLayout({
     children,
@@ -6,7 +5,7 @@ export default function CandidateLayout({
     children: React.ReactNode
   }) {
     return <section>
-        <Navbar/>
+        
         {children}
         </section>
   }

@@ -1,19 +1,17 @@
 "use client";
 
-import * as React from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi
 } from "@/components/ui/carousel";
-import { Button } from "@/components/ui/button";
-import { type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import * as React from "react";
 import CarousalBullets from "./ui/carousalBullets";
 
 export interface HeroCarousalItem {
@@ -30,7 +28,7 @@ interface HeroCarousalProps {
 const HeroCarousal: React.FC<HeroCarousalProps> = ({ HeroItems }) => {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
-  const [animationKey, setAnimationKey] = React.useState(0);
+  const [, setAnimationKey] = React.useState(0);
 
   React.useEffect(() => {
     if (!api) return;

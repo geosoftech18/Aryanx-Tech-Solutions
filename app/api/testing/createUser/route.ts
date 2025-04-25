@@ -30,11 +30,7 @@ export async function POST(request: Request) {
 
       email: body.email,
       password: body.password,
-      role: body.role || Role.CANDIDATE,
-      image: body.image,
-      resume: body.resume,
-      skills: body.skills || [],
-      companyId: body.companyId,
+      role: body.role || Role.CANDIDATE
     });
 
     if (result.success) {

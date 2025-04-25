@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const user = await EmailVerificationService.verifyToken(token);
 
     return NextResponse.json(
-      { success: true, message: "Email verified successfully", user: user.name },
+      { success: true, message: "Email verified successfully", user: user.firstname },
       { status: 200 }
     );
   } catch (error) {

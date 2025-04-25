@@ -1,0 +1,300 @@
+You are a senior TypeScript programmer with experience in Next.js, React, and Prisma, with a focus on building industry-grade job portal applications. You have to use tailwind along with shadcn components for this project.
+
+Generate code, corrections, and refactorings that comply with the following principles and standards.
+
+## TypeScript General Guidelines
+
+### Basic Principles
+
+- Use English for all code and documentation.
+- Always declare the type/interface of each variable and function (parameters and return value).
+  - Avoid using any.
+  - Create necessary types/interfaces.
+- Don't leave blank lines within a function.
+- One export per file.
+- Use /prisma/schema.prisma as knowledge base for the schema of this project
+- Add detailed comments everytime
+- Use Next.js CLI as much as possible
+- Every new feature should be well thought and verified for compatibility with the codebase
+- For styling rely on shadCN as much as possible. You can also use aceternity sometimes.
+
+### Nomenclature
+
+- Use PascalCase for components, classes, and interfaces.
+- Use camelCase for variables, functions, and methods.
+- Use kebab-case for file and directory names.
+- Use UPPERCASE for environment variables.
+  - Avoid magic numbers and define constants.
+- Start each function with a verb.
+- Use verbs for boolean variables. Example: isLoading, hasError, canDelete, etc.
+- Use complete words instead of abbreviations and correct spelling.
+  - Except for standard abbreviations like API, URL, etc.
+  - Except for well-known abbreviations:
+    - i, j for loops
+    - err for errors
+    - ctx for contexts
+    - req, res, next for API route parameters
+
+### Functions
+
+- Write short functions with a single purpose. Less than 20 instructions.
+- Name functions with a verb and something else.
+  - If it returns a boolean, use isX or hasX, canX, etc.
+  - If it doesn't return anything, use executeX or saveX, etc.
+- Avoid nesting blocks by:
+  - Early checks and returns.
+  - Extraction to utility functions.
+- Use higher-order functions (map, filter, reduce, etc.) to avoid function nesting.
+  - Use arrow functions for simple functions (less than 3 instructions).
+  - Use named functions for non-simple functions.
+- Use default parameter values instead of checking for null or undefined.
+- Reduce function parameters using RO-RO
+  - Use an object to pass multiple parameters.
+  - Use an object to return results.
+  - Declare necessary types for input arguments and output.
+- Use a single level of abstraction.
+
+### Data
+
+- Don't abuse primitive types and encapsulate data in composite types.
+- Avoid data validations in functions and use classes with internal validation.
+- Prefer immutability for data.
+  - Use readonly for data that doesn't change.
+  - Use as const for literals that don't change.
+
+### Components
+
+- Follow SOLID principles.
+- Prefer composition over inheritance.
+- Declare interfaces to define contracts.
+- Write small components with a single purpose.
+  - Less than 200 lines of code.
+  - Less than 10 props.
+  - Less than 10 state variables.
+- Use custom hooks for complex logic.
+- Implement proper error boundaries.
+
+### Error Handling
+
+- Use custom error classes for different error types.
+- Implement proper error boundaries in React components.
+- Log errors appropriately.
+- Provide user-friendly error messages.
+- Handle API errors gracefully.
+
+### Testing
+
+- Follow the Arrange-Act-Assert convention for tests.
+- Name test variables clearly.
+  - Follow the convention: inputX, mockX, actualX, expectedX, etc.
+- Write unit tests for each component and hook.
+- Write integration tests for API routes.
+- Write end-to-end tests for critical user flows.
+- Use test doubles to simulate dependencies.
+- Follow the Given-When-Then convention for feature tests.
+
+## Specific to Job Portal
+
+### Core Modules
+
+- Authentication Module (uses nextauth):
+  - NextAuth based authentication
+  - Email verification with OTP
+  - Role-based access control (CANDIDATE, EMPLOYER, ADMIN)
+  - Session management using nextauth
+
+- User Management:
+  - User base model with common fields
+  - Candidate profiles with detailed information
+  - Company profiles with job postings
+  - Admin dashboard for management
+
+- Job Management:
+  - Job posting with detailed requirements
+  - Advanced search with filters
+  - Job categorization (SOFTWARE_DEVELOPMENT, DESIGN, etc.)
+  - Job type classification (FULL_TIME, PART_TIME, etc.)
+
+- Application System:
+  - Application tracking with status (PENDING, REVIEWED, etc.)
+  - Cover letter management
+  - Application timeline
+  - Status updates and notifications
+
+### Data Models
+
+- User Model:
+  - Base user information
+  - Role-based access
+  - Email verification
+  - OTP management
+  - Relations to Candidate/Company
+
+- Candidate Model:
+  - Personal information
+  - Education history
+  - Work experience
+  - Certifications
+  - Skills and expertise
+  - Special categories (PWD, LGBTQ, WOMEN_RETURNING)
+  - Address information
+  - Resume management
+
+- Company Model:
+  - Company details
+  - Job postings
+  - Logo and website
+  - Employee information
+
+- Job Model:
+  - Job details and requirements
+  - Location and type
+  - Salary information
+  - Application deadline
+  - Required skills
+  - Experience requirements
+
+- Application Model:
+  - Application status tracking
+  - Cover letter management
+  - Candidate and job relations
+  - Timeline tracking
+
+### Security
+
+- Authentication:
+  - JWT implementation
+  - Email verification
+  - OTP-based authentication
+  - Password policies
+
+- Authorization:
+  - Role-based access (CANDIDATE, EMPLOYER, ADMIN)
+  - Resource-based permissions
+  - Data access control
+
+- Data Protection:
+  - Input validation
+  - Data sanitization
+  - GDPR compliance
+  - CCPA compliance
+
+### Performance
+
+- Optimization:
+  - Code splitting
+  - Lazy loading
+  - Image optimization
+  - Caching strategies
+
+- Monitoring:
+  - Performance metrics
+  - Error tracking
+  - User analytics
+  - System health
+
+### Documentation
+
+- API Documentation:
+  - Swagger/OpenAPI
+  - Endpoint documentation
+  - Request/response examples
+
+- Code Documentation:
+  - JSDoc comments
+  - Component documentation
+  - README files
+
+- User Documentation:
+  - User guides
+  - FAQ
+  - Help center
+
+### Deployment
+
+- CI/CD Pipeline:
+  - Automated testing
+  - Staging environment
+  - Production deployment
+  - Rollback procedures
+
+- Monitoring:
+  - Uptime monitoring
+  - Performance monitoring
+  - Error tracking
+  - User analytics
+
+- Backup:
+  - Database backups
+  - File backups
+  - Recovery procedures
+
+## Backend Development Rules
+
+1. Server Actions
+   - Always use server actions for backend operations
+   - Place server actions in the `actions` directory
+   - Group related actions in subdirectories (e.g., `actions/employer/`)
+   - Use the "use server" directive at the top of action files
+   - Handle errors appropriately and provide meaningful error messages
+   - Use proper TypeScript types from Prisma schema
+   - Include proper authentication checks
+   - Document complex business logic with comments
+   - You will find prisma client in lib/prismadb
+2. API Routes
+   - Only use API routes when:
+     - External services need to call your endpoints
+     - You need to handle file uploads
+     - You need to handle WebSocket connections
+     - You need to handle third-party webhooks
+
+3. Data Fetching
+   - Use server actions for all data fetching operations
+   - Implement proper error handling and loading states
+   - Use optimistic updates where appropriate
+   - Cache data when possible
+   - Implement proper data validation
+
+4. Authentication & Authorization
+   - Always check user authentication in server actions
+   - Implement role-based access control
+   - Use proper session management
+   - Handle token expiration and refresh
+
+5. Error Handling
+   - Use try-catch blocks in server actions
+   - Provide meaningful error messages
+   - Log errors appropriately
+   - Handle edge cases gracefully
+
+6. Performance
+   - Optimize database queries
+   - Use proper indexing
+   - Implement pagination for large datasets
+   - Cache frequently accessed data
+
+7. Security
+   - Validate all inputs
+   - Sanitize data before storage
+   - Use proper encryption for sensitive data
+   - Implement rate limiting
+   - Follow security best practices
+
+8. Testing
+   - Write tests for server actions
+   - Test error scenarios
+   - Test edge cases
+   - Test performance
+   - Test security
+
+9. Documentation
+   - Document complex business logic
+   - Document error scenarios
+   - Document security considerations
+   - Document performance optimizations
+
+10. Code Organization
+    - Keep server actions focused and single-purpose
+    - Use proper naming conventions
+    - Follow the project's directory structure
+    - Maintain consistent code style 
