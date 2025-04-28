@@ -16,7 +16,6 @@ import {
   CheckCircle,
   FileText,
   PieChart,
-  Settings,
   TrendingUp,
   Users
 } from "lucide-react";
@@ -153,19 +152,19 @@ export default function EmployerDashboard() {
                 <Building2 className="h-4 w-4" />
                 <span>Company Profile</span>
               </Link>
-              <Link
+              {/* <Link
                 href="/EMPLOYER/settings"
                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
               >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
-              </Link>
+              </Link> */}
             </div>
           </motion.div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 -mt-8">
+      <div className="container mx-auto px-4 py-8 mt-4">
         {/* Main Stats Grid */}
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"

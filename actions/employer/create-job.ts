@@ -5,19 +5,7 @@ import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 import prisma from "@/lib/prismaDB";
 import { JobType, JobCategory, Prisma } from "@prisma/client";
 
-export async function createJob(data: {
-  title: string;
-  description: string;
-  location: string;
-  type: JobType;
-  category: JobCategory;
-  salary?: number;
-  deadline: Date;
-  experience?: string;
-  skills: string[];
-  isFeatured?: boolean;
-  isActive?: boolean;
-}) {
+export async function createJob(data: Prisma.JobCreateInput) {
   try {
     const session = await getServerSession(NEXT_AUTH_CONFIG);
     if (!session?.user?.id) {
@@ -35,8 +23,7 @@ export async function createJob(data: {
 
     const job = await prisma.job.create({
       data: {
-        ...data,
-        companyId: company.id,
+        ...data
       },
     });
 

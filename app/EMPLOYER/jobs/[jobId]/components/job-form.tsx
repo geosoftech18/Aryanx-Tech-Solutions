@@ -5,52 +5,40 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { JobCategory, JobType } from "@prisma/client";
+import { Job, JobCategory, JobType } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
 
 // Define form values type that matches the Prisma schema
-type JobFormValues = {
-  title: string;
-  description: string;
-  location: string;
-  type: JobType;
-  category: JobCategory;
-  salary?: number;
-  deadline: Date;
-  experience?: string;
-  skills: string;
-  isFeatured?: boolean;
-};
-
+type JobFormValues = Pick<Job, "title" | "description" | "location" | "type" | "category" | "salary" | "deadline" | "experience" | "skills" | "isFeatured" | "isActive">
 // Define schema that matches the form values type exactly
 const jobFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -58,31 +46,30 @@ const jobFormSchema = z.object({
   location: z.string().min(2, "Location must be at least 2 characters"),
   type: z.nativeEnum(JobType),
   category: z.nativeEnum(JobCategory),
-  salary: z.number().optional(),
+  salary: z.number().nullable(),
   deadline: z.date(),
-  experience: z.string().optional(),
-  skills: z.string(),
-  isFeatured: z.boolean().optional().default(false),
-}) satisfies z.ZodType<JobFormValues>;
+  experience: z.string().nullable(),
+  skills: z.array(z.string()).min(1, "Skills are required"),
+  isFeatured: z.boolean(),
+  isActive: z.boolean(),
+}) satisfies z.ZodType<JobFormValues>; 
 
-export default function CreateJobPage() {
+export default function JobForm({ initialData , companyId, jobId}: {initialData:JobFormValues | null, companyId:string, jobId:string | null}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const jobId = searchParams.get("jobId");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<JobFormValues>({
-    resolver: zodResolver(jobFormSchema),
-    defaultValues: {
+    resolver:  zodResolver(jobFormSchema),
+    defaultValues: initialData ||  {
       title: "",
       description: "",
       location: "",
       type: JobType.FULL_TIME,
       category: JobCategory.SOFTWARE_DEVELOPMENT,
-      salary: undefined,
+      salary: null,
       deadline: new Date(),
       experience: "",
-      skills: "",
+      skills: [],
       isFeatured: false,
     },
   });
@@ -90,14 +77,8 @@ export default function CreateJobPage() {
   async function onSubmit(data: JobFormValues) {
     setIsSubmitting(true);
     try {
-      // Transform skills string to array before sending to server
-      const jobData = {
-        ...data,
-        skills: data.skills.split(",").map((s) => s.trim()),
-      };
-
       if (jobId) {
-        const result = await updateJob(jobId, jobData);
+        const result = await updateJob(jobId, data);
         if (result.success) {
           toast.success("Job updated successfully");
           router.push("/EMPLOYER/jobs");
@@ -105,7 +86,7 @@ export default function CreateJobPage() {
           toast.error(result.error || "Failed to update job");
         }
       } else {
-        const result = await createJob(jobData);
+        const result = await createJob({...data, company:{connect:{id:companyId}}});
         if (result.success) {
           toast.success("Job created successfully");
           router.push("/EMPLOYER/jobs");
@@ -246,6 +227,7 @@ export default function CreateJobPage() {
                           type="number"
                           placeholder="Enter salary"
                           {...field}
+                          value={field.value || ""}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                         />
                       </FormControl>

@@ -10,7 +10,7 @@ type UpdateCompanyResponse = {
   message: string;
 };
 
-export class CompanyUpdateError extends Error {
+ class CompanyUpdateError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'CompanyUpdateError';

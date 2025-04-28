@@ -15,29 +15,6 @@ interface PageProps {
   }>;
 }
 
-interface JobDetails {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  type: JobType;
-  category: JobCategory;
-  salary: number | null;
-  deadline: Date;
-  experience: string | null;
-  skills: string[];
-  isFeatured: boolean;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  company: {
-    id: string;
-    name: string;
-    description: string;
-    logo: string | null;
-    website: string | null;
-  };
-}
 
 interface SimilarJob {
   id: string;
@@ -46,18 +23,19 @@ interface SimilarJob {
   category: JobCategory;
   company: {
     name: string;
+    logo: string | null;
   };
 }
 
 export default async function JobDetailsPage({ params }: PageProps) {
   const { jobId } = await params;
 
-  const jobDetails = await getJobDetails(jobId) as JobDetails | null;
+  const jobDetails = await getJobDetails(jobId);
   if (!jobDetails) {
     notFound();
   }
 
-  const similarJobs = await getSimilarJobs(jobId, jobDetails.category, 3) as SimilarJob[];
+  const similarJobs = await getSimilarJobs(jobId, jobDetails.category, 3);
 
   return (
     <div className="container mx-auto px-4 py-8">

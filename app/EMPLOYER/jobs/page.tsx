@@ -5,26 +5,25 @@ import { getJobsByCompany } from "@/actions/jobs/get-jobs-by-company";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Job, JobCategory, JobType } from "@prisma/client";
 import { format } from "date-fns";
@@ -204,7 +203,7 @@ export default function JobsPage() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() =>
-                        router.push(`/EMPLOYER/jobs/create?jobId=${job.id}`)
+                        router.push(`/EMPLOYER/jobs/${job.id}`)
                       }
                     >
                       <Edit className="mr-2 h-4 w-4" />
@@ -259,17 +258,6 @@ export default function JobsPage() {
                 )}
               </div>
             </CardContent>
-            <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() =>
-                  router.push(`/EMPLOYER/applications?jobId=${job.id}`)
-                }
-              >
-                View Applications
-              </Button>
-            </CardFooter>
           </Card>
         ))}
       </div>
