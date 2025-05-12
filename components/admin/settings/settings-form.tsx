@@ -29,12 +29,12 @@ const profileFormSchema = z.object({
 })
 
 const notificationsFormSchema = z.object({
-  emailNotifications: z.boolean().default(true),
-  newApplications: z.boolean().default(true),
-  newJobs: z.boolean().default(true),
-  marketingEmails: z.boolean().default(false),
-  securityEmails: z.boolean().default(true),
-})
+  emailNotifications: z.boolean(),
+  newApplications: z.boolean(),
+  newJobs: z.boolean(),
+  marketingEmails: z.boolean(),
+  securityEmails: z.boolean(),
+}).strict()
 
 const appearanceFormSchema = z.object({
   theme: z.enum(["light", "dark", "system"], {

@@ -29,7 +29,7 @@ export const LGBTQCandidate = ({ form }: { form: UseFormReturn<z.infer<typeof fo
         render={({ field }) => (
           <FormItem>
             <FormLabel>LGBTQ Category *</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select onValueChange={field.onChange} value={field.value as LGBTQ}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select LGBTQ category" />

@@ -56,7 +56,7 @@ export async function createApplication(data: { jobId: string; userId: string })
       type: NotificationType.NEW_APPLICATION_RECEIVED,
       title: 'New Application Received',
       message: `${candidate.user.firstname} ${candidate.user.lastname} has applied for ${job.title}`,
-      employerId: job.company.userId,
+      recipientId: job.company.userId,
       jobId: job.id,
       applicationId: application.id,
       shouldEmail: true

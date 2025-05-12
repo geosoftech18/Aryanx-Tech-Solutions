@@ -39,6 +39,7 @@ export const WomenReturningCandidate = ({
                 placeholder="Describe career break"
                 className="min-h-[100px]"
                 {...field}
+                value={field.value ?? ""}
               />
             </FormControl>
             <FormMessage />

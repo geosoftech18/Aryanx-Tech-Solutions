@@ -37,7 +37,7 @@ export async function notifyNewJob(jobId: string) {
         type: NotificationType.NEW_JOB_POSTED,
         title: "New Job Opportunity",
         message: `${job.company.name} posted a new job: ${job.title}`,
-        userId: candidate.userId,
+        recipientId: candidate.userId,
         jobId: job.id,
       })
     );
@@ -78,7 +78,7 @@ export async function notifyApplicationStatusChange(applicationId: string) {
       type: NotificationType.APPLICATION_STATUS_UPDATED,
       title: "Application Status Updated",
       message: `Your application for ${application.job.title} at ${application.job.company.name} has been updated to ${application.status}`,
-      userId: application.Candidate.userId,
+      recipientId: application.Candidate.userId,
       applicationId: application.id,
       jobId: application.jobId,
       shouldEmail: true, // Send email for status changes
@@ -122,7 +122,7 @@ export async function notifyNewApplication(applicationId: string) {
       type: NotificationType.NEW_APPLICATION_RECEIVED,
       title: "New Job Application",
       message: `${application.Candidate?.user.firstname} ${application.Candidate?.user.lastname} applied for ${application.job.title}`,
-      userId: application.job.company.userId,
+      recipientId: application.job.company.userId,
       applicationId: application.id,
       jobId: application.jobId,
       shouldEmail: true, // Send email for new applications

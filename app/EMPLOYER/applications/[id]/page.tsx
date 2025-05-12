@@ -200,7 +200,7 @@ export default function ApplicationDetailsPage({ params }: PageProps) {
                 {application.Candidate.WorkExperience.map((exp) => (
                   <div key={exp.id} className="mb-4">
                     <p className="font-medium">
-                      {exp.position} at {exp.name}
+                      {exp.position} at {exp.companyName}
                     </p>
                     <p className="text-sm text-gray-500">
                       {format(new Date(exp.startDate), "MMM yyyy")} -{" "}

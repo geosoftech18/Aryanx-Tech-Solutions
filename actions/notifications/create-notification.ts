@@ -8,7 +8,7 @@ interface CreateNotificationParams {
   type: NotificationType;
   title: string;
   message: string;
-  employerId: string;
+  recipientId: string;
   jobId?: string;
   applicationId?: string;
   shouldEmail?: boolean;
@@ -68,7 +68,7 @@ export async function createNotification({
   type,
   title,
   message,
-  employerId,
+  recipientId,
   jobId,
   applicationId,
   shouldEmail = false,
@@ -84,7 +84,7 @@ export async function createNotification({
         type,
         title,
         message,
-        userId: employerId,
+        userId: recipientId,
         jobId,
         applicationId,
       },

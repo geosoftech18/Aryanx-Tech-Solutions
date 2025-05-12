@@ -33,7 +33,7 @@ export const PWDCandidate = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel>PWD Category *</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select onValueChange={field.onChange} value={field.value as PwdCategory}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select disability category" />
