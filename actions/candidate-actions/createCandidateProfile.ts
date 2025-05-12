@@ -4,6 +4,7 @@ import { deleteFile, storeFile } from "@/lib/filestorage";
 import prismadb from "@/lib/prismaDB";
 import { revalidatePath } from "next/cache";
 import { CandidateType, Gender, LGBTQ, PwdCategory } from "@prisma/client";
+import { CandidateFormValues } from "@/components/candidate/formschema";
 
 export async function createCandidateProfile(
   userId: string,
@@ -21,7 +22,7 @@ export async function createCandidateProfile(
     }
 
     const resumeFile = formData.get("resume") as File;
-    const values = JSON.parse(formData.get("values") as string);
+    const values: CandidateFormValues = JSON.parse(formData.get("values") as string);
 
     // Validate required special fields
     if (!values.gender) {
@@ -62,11 +63,11 @@ export async function createCandidateProfile(
 
     const candidateData = {
       userId,
-      contact: values.phone,
-      YOE: parseExperience(values.experience),
-      skills: values.skills.split(",").map((skill: string) => skill.trim()),
-      Bio: values.bio,
-      DOB: new Date(values.dob),
+      contact: values.contact,
+      YOE: typeof values.YOE === "number" ? values.YOE : parseExperience(values.YOE),
+      skills: values.skills,
+      Bio: values.Bio,
+      DOB: values.DOB,
       resume: resumePath,
       gender: values.gender as Gender,
       candidateType: values.candidateType as CandidateType || null,
@@ -76,14 +77,14 @@ export async function createCandidateProfile(
       education: {
         create: values.education.map((edu: any) => ({
           degree: edu.degree,
-          specialisation: edu.specialization,
+          specialisation: edu.specialisation,
           institution: edu.institution,
-          passout_year: edu.yearOfCompletion,
-          CGPA: parseFloat(edu.grade) || 0,
+          passout_year: edu.passout_year,
+          CGPA: edu.CGPA,
         })),
       },
       certifications: {
-        create: values.certifications.map((cert: any) => ({
+        create: values.certifications?.map((cert: any) => ({
           name: cert.name,
           company: cert.issuingCompany,
           issueDate: new Date(cert.issueDate),
@@ -91,7 +92,7 @@ export async function createCandidateProfile(
         })),
       },
       WorkExperience: {
-        create: values.workExperience.map((exp: any) => ({
+        create: values.WorkExperience?.map((exp: any) => ({
           name: exp.companyName,
           position: exp.position,
           startDate: new Date(exp.startDate),
@@ -102,18 +103,18 @@ export async function createCandidateProfile(
       },
       Address: {
         create: {
-          houseNo: parseInt(values.housenumber) || 0,
+          houseNo: values.houseNo,
           locality: values.locality,
-          pincode: parseInt(values.pincode),
-          city: values.currentCity,
-          state: values.currentState,
+          pincode: values.pincode,
+          city: values.city,
+          state: values.state,
           country: values.country,
         },
       },
     };
 
     const candidate = await prismadb.candidate.create({
-      data: candidateData,
+      data: candidateData as any,
       include: {
         education: true,
         certifications: true,

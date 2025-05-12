@@ -1,56 +1,98 @@
-import { CandidateType, Gender, LGBTQ, PwdCategory } from "@prisma/client";
+import { Address, Candidate, CandidateType, Certification, Education, Gender, LGBTQ, PwdCategory, User, WorkExperience } from "@prisma/client";
 import { z } from "zod";
 
-export const formSchema = z.object({
-  phone: z.string().min(10, "Phone number must be at least 10 characters"),
-  housenumber: z.string(),
-  locality: z.string(),
-  pincode: z.string(),
-  country: z.string().min(1, "Country is required"),
-  currentState: z.string().min(1, "Current state is required"),
-  currentCity: z.string().min(1, "Current city is required"),
-  dob: z.string().min(1, "Date of birth is required"),
-  experience: z.string(),
-  skills: z.string(),
+type WorkExperienceType = Omit<WorkExperience, "candidateId" | "id">;
+type EducationType = Omit<Education, "candidateId" | "id">;
+type CertificationType = Omit<Certification, "candidateId" | "id">;
+type AddressType = Omit<Address, "candidateId" | "id">;
+type UserType = Omit<User, "id" | "createdAt" | "updatedAt" | "emailVerified" | "verifyToken" | "verifyExpires" | "candidate" | "company" | "middlename">;
 
-  bio: z.string().min(20, "Bio must be at least 20 characters"),
-  jobTitle: z.string().min(2, "Job title is required"),
+export interface CandidateFormInterface extends Omit<Candidate, "id" | "userId" | "user" | "createdAt" | "updatedAt">, AddressType , UserType {
+  education: EducationType[];
+  certifications?: CertificationType[];
+  WorkExperience?: WorkExperienceType[];
+  acknowledgement: boolean;
+  middlename?: string | null;
+}
+
+export type CandidateFormValues = Pick<CandidateFormInterface, 
+  | "contact" 
+  | "houseNo" 
+  | "locality" 
+  | "pincode" 
+  | "country" 
+  | "state" 
+  | "city" 
+  | "DOB" 
+  | "YOE" 
+  | "skills" 
+  | "Bio" 
+  | "firstname" 
+  | "lastname" 
+  | "middlename"
+  | "education" 
+  | "certifications" 
+  | "WorkExperience" 
+  | "candidateType" 
+  | "gender" 
+  | "pwdCategory" 
+  | "LGBTQ" 
+  | "employmentBreak"
+> & {
+  resume?: File;
+};
+
+export const formSchema = z.object({
+  contact: z.string().min(10, "Phone number must be at least 10 characters"),
+  houseNo: z.number(),
+  locality: z.string(),
+  pincode: z.number(),
+  country: z.string().min(1, "Country is required"),
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  DOB: z.date(),
+  YOE: z.number(),
+  skills: z.array(z.string()),
+  Bio: z.string().min(20, "Bio must be at least 20 characters"),
+  firstname: z.string().min(2, "Name is required"),
+  middlename: z.string().optional(),
+  lastname: z.string().min(2, "Name is required"),
   education: z
     .array(
       z.object({
         degree: z.string().min(1, "Degree is required"),
-        specialization: z.string().min(1, "Specialization is required"),
+        specialisation: z.string().min(1, "Specialisation is required"),
         institution: z.string().min(1, "Institution is required"),
-        yearOfCompletion: z.string().min(1, "Year of completion is required"),
-        grade: z.string().min(1, "CGPA/Percentage is required"),
+        passout_year: z.date(),
+        CGPA: z.number(),
       })
     )
     .min(1, "At least one education record is required"),
-  certifications:
-    z.array(
+  certifications: z
+    .array(
       z.object({
         name: z.string().min(1, "Certification name is required"),
-        issuingCompany: z.string().min(1, "Issuing company is required"),
-        issueDate: z.string().min(1, "Issue date is required"),
-        expiryDate: z.string().optional(),
+        company: z.string().min(1, "Company is required"),
+        issueDate: z.date(),
+        expirationDate: z.date(),
       })
-    ) || [], // Ensure it's always an array
-  workExperience:
-    z.array(
+    )
+    .optional(),
+  WorkExperience: z
+    .array(
       z.object({
-        companyName: z.string().min(1, "Company name is required"),
+        name: z.string().min(1, "Company name is required"),
         position: z.string().min(1, "Position is required"),
-        startDate: z.string().min(1, "Start date is required"),
-        endDate: z.string().optional(),
+        startDate: z.date(),
+        endDate: z.date(),
         currentlyWorking: z.boolean(),
-        description: z.string().optional(),
+        jobDescription: z.string(),
+        companyName: z.string().min(1, "Company name is required"),
       })
-    ) || [], // Ensure it's always an array
-  acknowledgement: z.boolean().refine((value) => value === true, {
-    message: "You must acknowledge the terms and conditions",
-  }),
+    )
+    .optional(),
   resume: z
-    .any() // Change from z.instanceof(File) to z.any()
+    .any()
     .refine((file) => !file || file.size <= 5 * 1024 * 1024, {
       message: "File size must be less than 5MB",
     })
@@ -65,10 +107,12 @@ export const formSchema = z.object({
       {
         message: "Only PDF, DOC, and DOCX files are allowed",
       }
-    ),
-    candidateType: z.nativeEnum(CandidateType).optional(),
-    gender: z.nativeEnum(Gender),
-    pwdCategory: z.nativeEnum(PwdCategory).optional(),
-    LGBTQ:z.nativeEnum(LGBTQ).optional(),
-    employmentBreak: z.string().optional(),
-});
+    )
+    .optional(),
+  candidateType: z.nativeEnum(CandidateType),
+  gender: z.nativeEnum(Gender),
+  pwdCategory: z.nativeEnum(PwdCategory).nullable(),
+  LGBTQ: z.nativeEnum(LGBTQ).nullable(),
+  employmentBreak: z.string().nullable(),
+  acknowledgement: z.boolean(),
+}) satisfies z.ZodType<CandidateFormValues>;

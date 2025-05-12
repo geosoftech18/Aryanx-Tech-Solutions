@@ -32,6 +32,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { AlertModal } from "@/components/ui/alertModal";
 
 type JobWithRelations = Job & {
   applications: { id: string }[];
@@ -47,6 +48,9 @@ export default function JobsPage() {
   const [typeFilter, setTypeFilter] = useState<JobType | "all">("all");
   const [jobs, setJobs] = useState<JobWithRelations[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [jobIdToDelete, setJobIdToDelete] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -76,13 +80,20 @@ export default function JobsPage() {
     };
 
     fetchJobs();
-  }, []);
+  }, [router]);
 
   const handleDelete = async (jobId: string) => {
+    setJobIdToDelete(jobId);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!jobIdToDelete) return;
+    setDeleteLoading(true);
     try {
-      const result = await deleteJob(jobId);
+      const result = await deleteJob(jobIdToDelete);
       if (result.success) {
-        setJobs(jobs.filter((job) => job.id !== jobId));
+        setJobs(jobs.filter((job) => job.id !== jobIdToDelete));
         toast.success("Job deleted successfully");
       } else {
         toast.error(result.error || "Failed to delete job");
@@ -90,6 +101,10 @@ export default function JobsPage() {
     } catch (error) {
       toast.error("An error occurred");
       console.log(error);
+    } finally {
+      setDeleteLoading(false);
+      setDeleteModalOpen(false);
+      setJobIdToDelete(null);
     }
   };
 
@@ -261,6 +276,16 @@ export default function JobsPage() {
           </Card>
         ))}
       </div>
+
+      <AlertModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setJobIdToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        loading={deleteLoading}
+      />
     </div>
   );
 }

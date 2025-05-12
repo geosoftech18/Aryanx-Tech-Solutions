@@ -14,7 +14,7 @@ interface PageProps {
 export default async function JobModePage({params}:PageProps) {
   const {jobId} = await params;
   const {company} = await getCompany()
-  console.log(company)
+  // console.log(company)
 
   if(jobId === "create" || jobId === null){
     return <JobForm jobId={null} initialData={null} companyId={company.id} />

@@ -1,20 +1,21 @@
+import { getCandidateProfileData } from "@/actions/candidate-actions/getCandidateProfile";
 import { getJobDetails } from "@/actions/jobs/get-job-details";
 import { getSimilarJobs } from "@/actions/jobs/get-similar-jobs";
 import JobApplyBox from "@/components/jobs/JobApplyBox";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { JobCategory, JobType } from "@prisma/client";
+import { NEXT_AUTH_CONFIG } from "@/lib/auth";
+import { CandidateType, JobCategory, JobType } from "@prisma/client";
 import { format } from "date-fns";
 import { Briefcase, Calendar, DollarSign, MapPin } from "lucide-react";
-import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { notFound, redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{
     jobId: string;
   }>;
 }
-
 
 interface SimilarJob {
   id: string;
@@ -29,6 +30,14 @@ interface SimilarJob {
 
 export default async function JobDetailsPage({ params }: PageProps) {
   const { jobId } = await params;
+  const session = await getServerSession(NEXT_AUTH_CONFIG);
+
+  if (!session?.user?.id) {
+    redirect("/auth/login");
+  }
+
+  const candidateType = (await getCandidateProfileData(session?.user.id))?.candidateType
+
 
   const jobDetails = await getJobDetails(jobId);
   if (!jobDetails) {
@@ -49,7 +58,9 @@ export default async function JobDetailsPage({ params }: PageProps) {
                 <div>
                   <CardTitle className="text-2xl">{jobDetails.title}</CardTitle>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-lg font-medium">{jobDetails.company.name}</span>
+                    <span className="text-lg font-medium">
+                      {jobDetails.company.name}
+                    </span>
                     {jobDetails.company.logo && (
                       <img
                         src={jobDetails.company.logo}
@@ -59,7 +70,6 @@ export default async function JobDetailsPage({ params }: PageProps) {
                     )}
                   </div>
                 </div>
-                <Button>Apply Now</Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -74,11 +84,18 @@ export default async function JobDetailsPage({ params }: PageProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-gray-500" />
-                  <span>{jobDetails.salary ? `$${jobDetails.salary.toLocaleString()}` : "Not specified"}</span>
+                  <span>
+                    {jobDetails.salary
+                      ? `$${jobDetails.salary.toLocaleString()}`
+                      : "Not specified"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-gray-500" />
-                  <span>Posted {format(new Date(jobDetails.createdAt), "MMM d, yyyy")}</span>
+                  <span>
+                    Posted{" "}
+                    {format(new Date(jobDetails.createdAt), "MMM d, yyyy")}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -145,7 +162,14 @@ export default async function JobDetailsPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
-          <JobApplyBox company={jobDetails.company.name} jobTitle={jobDetails.title} />
+          <JobApplyBox
+            company={jobDetails.company.name}
+            jobTitle={jobDetails.title}
+            jobId={jobId}
+            employerId={jobDetails.company.user.id}
+            candidateType={candidateType as CandidateType}
+            jobFor={jobDetails.jobFor}
+          />
         </div>
 
         {/* Sidebar */}
@@ -161,7 +185,9 @@ export default async function JobDetailsPage({ params }: PageProps) {
                   {similarJobs.map((job: SimilarJob) => (
                     <div key={job.id} className="border-b pb-4 last:border-0">
                       <h3 className="font-medium">{job.title}</h3>
-                      <p className="text-sm text-gray-500">{job.company.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {job.company.name}
+                      </p>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge variant="secondary">{job.type}</Badge>
                         <Badge variant="outline">{job.category}</Badge>

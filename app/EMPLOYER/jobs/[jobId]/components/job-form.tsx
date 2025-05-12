@@ -1,6 +1,7 @@
 "use client";
 
 import { createJob, updateJob } from "@/actions/employer/create-job";
+import InputTags from "@/components/inputTags";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,7 +39,20 @@ import toast from "react-hot-toast";
 import * as z from "zod";
 
 // Define form values type that matches the Prisma schema
-type JobFormValues = Pick<Job, "title" | "description" | "location" | "type" | "category" | "salary" | "deadline" | "experience" | "skills" | "isFeatured" | "isActive">
+type JobFormValues = Pick<
+  Job,
+  | "title"
+  | "description"
+  | "location"
+  | "type"
+  | "category"
+  | "salary"
+  | "deadline"
+  | "experience"
+  | "skills"
+  | "isFeatured"
+  | "isActive"
+>;
 // Define schema that matches the form values type exactly
 const jobFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -52,15 +66,23 @@ const jobFormSchema = z.object({
   skills: z.array(z.string()).min(1, "Skills are required"),
   isFeatured: z.boolean(),
   isActive: z.boolean(),
-}) satisfies z.ZodType<JobFormValues>; 
+}) satisfies z.ZodType<JobFormValues>;
 
-export default function JobForm({ initialData , companyId, jobId}: {initialData:JobFormValues | null, companyId:string, jobId:string | null}) {
+export default function JobForm({
+  initialData,
+  companyId,
+  jobId,
+}: {
+  initialData: JobFormValues | null;
+  companyId: string;
+  jobId: string | null;
+}) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<JobFormValues>({
-    resolver:  zodResolver(jobFormSchema),
-    defaultValues: initialData ||  {
+    resolver: zodResolver(jobFormSchema),
+    defaultValues: initialData || {
       title: "",
       description: "",
       location: "",
@@ -71,10 +93,12 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
       experience: "",
       skills: [],
       isFeatured: false,
+      isActive: true,
     },
   });
 
   async function onSubmit(data: JobFormValues) {
+    console.log(data, "data");
     setIsSubmitting(true);
     try {
       if (jobId) {
@@ -86,7 +110,10 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
           toast.error(result.error || "Failed to update job");
         }
       } else {
-        const result = await createJob({...data, company:{connect:{id:companyId}}});
+        const result = await createJob({
+          ...data,
+          company: { connect: { id: companyId } },
+        });
         if (result.success) {
           toast.success("Job created successfully");
           router.push("/EMPLOYER/jobs");
@@ -120,7 +147,10 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
                   <FormItem>
                     <FormLabel>Job Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Senior Software Engineer" {...field} />
+                      <Input
+                        placeholder="Senior Software Engineer"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -226,9 +256,10 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
                         <Input
                           type="number"
                           placeholder="Enter salary"
-                          {...field}
                           value={field.value || ""}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
                         />
                       </FormControl>
                       <FormMessage />
@@ -301,12 +332,12 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
                   name="skills"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Required Skills</FormLabel>
+                      <FormLabel>Key Skills *</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="e.g., React, Node.js, TypeScript"
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.value)}
+                        <InputTags
+                          value={Array.isArray(field.value) ? field.value : []}
+                          onChange={field.onChange}
+                          placeholder="Add a skill and press Enter or comma"
                         />
                       </FormControl>
                       <FormMessage />
@@ -315,18 +346,16 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
                 />
               </div>
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {jobId ? "Updating..." : "Creating..."}
                   </>
+                ) : jobId ? (
+                  "Update Job"
                 ) : (
-                  jobId ? "Update Job" : "Create Job"
+                  "Create Job"
                 )}
               </Button>
             </form>
@@ -335,4 +364,4 @@ export default function JobForm({ initialData , companyId, jobId}: {initialData:
       </Card>
     </div>
   );
-} 
+}

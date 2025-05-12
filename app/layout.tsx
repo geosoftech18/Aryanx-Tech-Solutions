@@ -4,6 +4,7 @@ import { Providers } from "@/providers/sessionProvider";
 import Navbar from "@/components/candidate/navbar";
 import { getServerSession } from "next-auth";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,6 +25,7 @@ export default async function RootLayout({
         <Providers>
           <Navbar session={session} />
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>

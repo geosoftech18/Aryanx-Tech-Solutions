@@ -26,11 +26,19 @@ model User {
 
   company Company? @relation("UserToCompany")
 
+  notifications Notification[]
+
   otp           String?
   // New fields for email verification
   emailVerified Boolean   @default(false)
   verifyToken   String?   
   verifyExpires DateTime?
+
+  status UserStatus @default(PENDING)
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 model Candidate {
@@ -39,7 +47,7 @@ model Candidate {
   userId String @unique @db.ObjectId
   user   User   @relation("UserToCandidate", fields: [userId], references: [id])
 
-  candidateType  CandidateType?
+  candidateType  CandidateType
   contact        String
   education      Education[]
   certifications Certification[]
@@ -72,7 +80,7 @@ model Company {
   industry    Industry
   sector      Sector
   userId      String   @unique @db.ObjectId
-  user        User     @relation("UserToCompany", fields: [userId], references: [id])
+  user        User     @relation("UserToCompany", fields: [userId], references: [id] ,onDelete:Cascade)
   jobs        Job[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -92,10 +100,12 @@ model Job {
   isFeatured   Boolean       @default(false)
   isActive     Boolean       @default(true)
   companyId    String        @db.ObjectId
-  company      Company       @relation(fields: [companyId], references: [id])
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
   applications Application[]
+  notifications Notification[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  jobFor       CandidateType @default(REGULAR)
 }
 
 model Application {
@@ -103,29 +113,30 @@ model Application {
   status      ApplicationStatus @default(PENDING)
   userId      String            @db.ObjectId
   jobId       String            @db.ObjectId
-  job         Job               @relation(fields: [jobId], references: [id])
+  job         Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   coverLetter String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   Candidate   Candidate?        @relation(fields: [candidateId], references: [id])
   candidateId String?           @db.ObjectId
+  notifications Notification[]
 }
 
 model Education {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   candidateId    String    @db.ObjectId
-  candidate      Candidate @relation(fields: [candidateId], references: [id])
+  candidate      Candidate @relation(fields: [candidateId], references: [id] ,onDelete: Cascade)
   degree         String
   specialisation String
   institution    String
-  passout_year   String
+  passout_year   DateTime
   CGPA           Int
 }
 
 model Certification {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   candidateId    String    @db.ObjectId
-  candidate      Candidate @relation(fields: [candidateId], references: [id])
+  candidate      Candidate @relation(fields: [candidateId], references: [id] ,onDelete: Cascade)
   name           String
   company        String
   issueDate      DateTime
@@ -135,13 +146,13 @@ model Certification {
 model WorkExperience {
   id               String    @id @default(auto()) @map("_id") @db.ObjectId
   candidateId      String    @db.ObjectId
-  candidate        Candidate @relation(fields: [candidateId], references: [id])
-  name             String
+  candidate        Candidate @relation(fields: [candidateId], references: [id] ,onDelete: Cascade)
   position         String
   startDate        DateTime
   endDate          DateTime
   currentlyWorking Boolean
   jobDescription   String
+  companyName      String
 }
 
 model Address {
@@ -154,6 +165,27 @@ model Address {
   city        String
   state       String
   country     String
+}
+
+model Notification {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  type        NotificationType
+  title       String
+  message     String
+  isRead      Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  userId      String          @db.ObjectId
+  user        User            @relation(fields: [userId], references: [id] ,onDelete: Cascade)
+  jobId       String?         @db.ObjectId
+  job         Job?            @relation(fields: [jobId], references: [id])
+  applicationId String?       @db.ObjectId
+  application Application?    @relation(fields: [applicationId], references: [id])
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
 }
 
 enum Role {
@@ -261,3 +293,10 @@ enum Sector {
   STARTUP
   MULTINATIONAL
 }
+
+enum NotificationType {
+  NEW_JOB_POSTED
+  APPLICATION_STATUS_UPDATED
+  NEW_APPLICATION_RECEIVED
+}
+// all 3 redirects to admin dashboard

@@ -1,57 +1,45 @@
-
-import {
-  Briefcase,
-  Coins,
-  GraduationCap,
-  HeartPulse,
-  LineChart
-} from "lucide-react";
-import Link from "next/link";
+import { Button } from "@/components/ui/button"
+import { Briefcase, Code, Palette, Megaphone, TrendingUp, DollarSign, Users, type LucideIcon } from "lucide-react"
+import Link from "next/link"
 
 interface CategoryCardProps {
   category: {
-    id: string;
-    title: string;
-    count: number;
-    icon: string;
-  };
+    id: string
+    title: string
+    count: number
+    icon: string
+  }
 }
 
-const CategoryCard = ({ category }: CategoryCardProps) => {
-  // Map icon strings to actual Lucide icons
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case "laptop-code":
-        return <Briefcase className="h-6 w-6" />;
-      case "chart-line":
-        return <LineChart className="h-6 w-6" />;
-      case "coins":
-        return <Coins className="h-6 w-6" />;
-      case "stethoscope":
-        return <HeartPulse className="h-6 w-6" />;
-      case "graduation-cap":
-        return <GraduationCap className="h-6 w-6" />;
-      case "handshake":
-        return <Briefcase className="h-6 w-6" />; // Using Briefcase as placeholder, since HandshakeIcon doesn't exist
-      default:
-        return <Briefcase className="h-6 w-6" />;
-    }
-  };
+// Map of icon names to Lucide icon components
+const iconMap: Record<string, LucideIcon> = {
+  briefcase: Briefcase,
+  "laptop-code": Code,
+  palette: Palette,
+  megaphone: Megaphone,
+  "trending-up": TrendingUp,
+  "dollar-sign": DollarSign,
+  users: Users,
+}
+
+export default function CategoryCard({ category }: CategoryCardProps) {
+  // Get the icon component or default to Briefcase
+  const IconComponent = iconMap[category.icon] || Briefcase
 
   return (
-    <Link href={`/jobs/categories/${category.id}`}>
-      <div className="border rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition-all hover:border-blue-200 hover:bg-blue-50/30 cursor-pointer">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-100 rounded-full p-3 text-blue-600">
-            {getIcon(category.icon)}
-          </div>
-          <div>
-            <h3 className="text-lg font-medium">{category.title}</h3>
-            <p className="text-slate-500 text-sm">{category.count} open positions</p>
-          </div>
+    <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+          <IconComponent className="h-6 w-6 text-blue-600" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold">{category.title}</h3>
+          <p className="text-gray-500">{category.count} jobs available</p>
         </div>
       </div>
-    </Link> );
-};
-
-export default CategoryCard;
+      <Button asChild variant="outline" className="w-full">
+        <Link href={`/jobs?category=${category.id}`}>Browse Jobs</Link>
+      </Button>
+    </div>
+  )
+}

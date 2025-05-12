@@ -12,7 +12,15 @@ Generate code, corrections, and refactorings that comply with the following prin
   - Create necessary types/interfaces.
 - Don't leave blank lines within a function.
 - One export per file.
-- Use /prisma/schema.prisma as knowledge base for the schema of this project
+- Consider the /prisma/schema.prisma file as the single source of truth for your data models and relationships
+- Leverage the auto-generated Prisma types whenever possible instead of creating custom types
+- Maintain consistency with the database schema by using Prisma's type definitions throughout the application
+- Take advantage of Prisma's type safety by utilizing its generated types for:
+    --> Database queries and mutations
+    --> API request/response types
+    --> Component props
+    --> Form data structures
+    --> State management
 - Add detailed comments everytime
 - Use Next.js CLI as much as possible
 - Every new feature should be well thought and verified for compatibility with the codebase

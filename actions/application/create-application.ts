@@ -1,45 +1,91 @@
 "use server"
 
 import prismadb from "@/lib/prismaDB";
+import { Application, Notification, NotificationType } from "@prisma/client";
+import { createNotification } from "../notifications/create-notification";
 
-export async function createApplication(jobId: string, candidateId: string) {
+interface CreateApplicationResponse {
+  success: boolean;
+  application?: Application;
+  notification?: Notification;
+  error?: string;
+}
+
+export async function createApplication(data: { jobId: string; userId: string }): Promise<CreateApplicationResponse> {
   try {
-    const candidate = await prismadb.candidate.findUnique({ 
-      where: { id: candidateId } 
+    const { jobId, userId } = data;
+
+    const candidate = await prismadb.candidate.findFirst({ 
+      where: { userId },
+      include: {
+        user: true
+      }
     });
 
     if (!candidate) {
-      throw new Error(`Candidate with ID ${candidateId} not found`);
+      return {
+        success: false,
+        error: `Candidate profile not found for user ${userId}`
+      };
     }
 
     const job = await prismadb.job.findUnique({ 
-      where: { id: jobId } 
+      where: { id: jobId },
+      include: {
+        company: true
+      }
     });
 
     if (!job) {
-      throw new Error(`Job with ID ${jobId} not found`);
+      return {
+        success: false,
+        error: `Job with ID ${jobId} not found`
+      };
     }
 
-    const userId = candidate.userId;
+    const application = await prismadb.application.create({
+      data: {
+        userId,
+        jobId,
+        candidateId: candidate.id,
+        coverLetter: "I am very excited about this opportunity!",
+      },
+    });
 
-    try {
-      const application = await prismadb.application.create({
-        data: {
-          userId,
-          jobId,
-          candidateId,
-          coverLetter: "I am very excited about this opportunity!",
-        },
-      });
+    const { success: notifSuccess, notification, error: notifError } = await createNotification({
+      type: NotificationType.NEW_APPLICATION_RECEIVED,
+      title: 'New Application Received',
+      message: `${candidate.user.firstname} ${candidate.user.lastname} has applied for ${job.title}`,
+      employerId: job.company.userId,
+      jobId: job.id,
+      applicationId: application.id,
+      shouldEmail: true
+    });
 
-      return application;
-    } catch (error) {
-      throw new Error(`Failed to create application: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+    if (!notifSuccess) {
+      console.error('Notification creation failed:', notifError);
+      return {
+        success: false,
+        application,
+        notification,
+        error: `Application created, but notification failed: ${notifError}`
+      };
     }
+
+    return {
+      success: true,
+      application,
+      notification
+    };
   } catch (error) {
+    console.error('Error creating application:', error);
+    let errorMessage = 'Failed to create application.';
     if (error instanceof Error) {
-      throw error;
+      errorMessage += ' ' + error.message;
     }
-    throw new Error('An unexpected error occurred while processing the application');
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 }

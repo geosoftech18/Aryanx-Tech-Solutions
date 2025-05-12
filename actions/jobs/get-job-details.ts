@@ -8,7 +8,7 @@ import { Job } from "@prisma/client";
  * @param jobId - The ID of the job to fetch
  * @returns The job details with company information
  */
-export async function getJobDetails(jobId: string): Promise<Job & { company: { name: string; description: string; logo: string | null; website: string | null; employees: string | null; industry: string; sector: string } } | null> {
+export async function getJobDetails(jobId: string): Promise<Job & { company: { id: string; name: string; description: string; logo: string | null; website: string | null; employees: string | null; industry: string; sector: string ; user: {id:string} } } | null> {
   try {
     const job = await prisma.job.findUnique({
       where: {
@@ -17,6 +17,7 @@ export async function getJobDetails(jobId: string): Promise<Job & { company: { n
       include: {
         company: {
           select: {
+            id: true,
             name: true,
             description: true,
             logo: true,
@@ -24,8 +25,15 @@ export async function getJobDetails(jobId: string): Promise<Job & { company: { n
             employees: true,
             industry: true,
             sector: true,
+            user:{
+              select:{
+                id:true 
+              }
+            }
           },
-        },
+        
+        }
+        ,
       },
     });
 

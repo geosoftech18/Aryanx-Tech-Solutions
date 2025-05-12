@@ -18,22 +18,22 @@ type UpdateCompanyResponse = {
 }
 
 export async function updateCompany(
-  companyId: string, 
+  userId: string, 
   data: Prisma.CompanyUpdateInput
 ): Promise<UpdateCompanyResponse> {
   try {
     // Check if company exists
     const existingCompany = await prismadb.company.findUnique({
-      where: { id: companyId },
+      where: { userId: userId },
     });
 
     if (!existingCompany) {
-      throw new CompanyUpdateError(`Company with ID ${companyId} not found`);
+      throw new CompanyUpdateError(`Company with USER'S ID ${userId} not found`);
     }
 
     // Update company
     const updatedCompany = await prismadb.company.update({
-      where: { id: companyId },
+      where: { userId: userId },
       data: {
         ...data,
         updatedAt: new Date(),

@@ -1,12 +1,13 @@
 import { getCandidateApplicationsByUserId } from "@/actions/candidate-actions/getCandidateApplicationsByUserId";
-import { getCandidateProfileData } from "@/actions/candidate-actions/getCandidateProfile";
 import { isCandidateProfileComplete } from "@/actions/candidate-actions/isProfileComplete";
+import { getRecommendedJobsForCandidate } from "@/actions/candidate-actions/getRecommendedJobs";
 import CandidateDashboard from "@/components/candidate/candidateDashboard";
 import CandidateProfileCompletion from "@/components/candidate/candidateProfileCompletion";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
 const CandidatePage = async () => {
+
   const session = await getServerSession(NEXT_AUTH_CONFIG);
 
   //   console.log(session);
@@ -27,19 +28,19 @@ const CandidatePage = async () => {
   const userName = session.user.name;
 
   if (!isProfileComplete.isComplete) {
-    const initialData = await getCandidateProfileData(session.user.id);
 
     return (
       <CandidateProfileCompletion
-        initialData={initialData}
         userId={session.user.id}
+        mode="create"
       />
     );
   } else {
     const applications = await getCandidateApplicationsByUserId(
       session.user.id
     );
-    return <CandidateDashboard userName={userName} applications={applications} />;
+    const jobRecommendations = (await getRecommendedJobsForCandidate(session.user.id)).slice(0, 3);
+    return <CandidateDashboard userName={userName} applications={applications} jobRecommendations={jobRecommendations} />;
   }
 };
 

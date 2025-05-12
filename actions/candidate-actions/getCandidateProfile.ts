@@ -2,7 +2,6 @@
 
 import { formSchema } from "@/components/candidate/formschema";
 import prismadb from "@/lib/prismaDB";
-import { Candidate } from "@prisma/client";
 import { z } from "zod";
 
 export async function getCandidateProfileData(
@@ -16,49 +15,56 @@ export async function getCandidateProfileData(
         certifications: true,
         WorkExperience: true,
         Address: true,
+        user: true,
       },
     });
 
     if (!candidate) return null;
 
+    // Ensure all dates are properly handled
+    const defaultDate = new Date();
+
     return {
-      phone: candidate.contact ?? "",
-      housenumber: candidate.Address?.houseNo.toString() ?? "",
+      contact: candidate.contact ?? "",
+      houseNo: candidate.Address?.houseNo ?? 0,
       locality: candidate.Address?.locality ?? "",
-      pincode: candidate.Address?.pincode.toString() ?? "",
+      pincode: candidate.Address?.pincode ?? 0,
       country: candidate.Address?.country ?? "",
-      currentState: candidate.Address?.state ?? "",
-      currentCity: candidate.Address?.city ?? "",
-      dob: candidate.DOB?.toISOString().split("T")[0] ?? "",
-      experience: candidate.YOE?.toString() ?? "",
-      skills: candidate.skills?.join(", ") ?? "",
-      bio: candidate.Bio ?? "",
-      jobTitle:  "", 
-      gender: candidate.gender ?? undefined,
-      candidateType: candidate.candidateType ?? undefined,
-      pwdCategory: candidate.pwdCategory ?? undefined,
-      LGBTQ: candidate.LGBTQ ?? undefined,
-      employmentBreak: candidate.employmentBreak ?? undefined,
+      state: candidate.Address?.state ?? "",
+      city: candidate.Address?.city ?? "",
+      DOB: candidate.DOB ?? defaultDate,
+      YOE: candidate.YOE ?? 0,
+      skills: candidate.skills ?? [],
+      Bio: candidate.Bio ?? "",
+      firstname: candidate.user.firstname ?? "",
+      middlename: candidate.user.middlename ?? "",
+      lastname: candidate.user.lastname ?? "",
+      gender: candidate.gender,
+      candidateType: candidate.candidateType,
+      pwdCategory: candidate.pwdCategory,
+      LGBTQ: candidate.LGBTQ,
+      employmentBreak: candidate.employmentBreak,
       education: candidate.education.map((edu) => ({
-        degree: edu.degree ?? "",
-        specialization: edu.specialisation ?? "",
-        institution: edu.institution ?? "",
-        yearOfCompletion: edu.passout_year?.toString() ?? "",
-        grade: edu.CGPA?.toString() ?? "",
+        degree: edu.degree,
+        specialisation: edu.specialisation,
+        institution: edu.institution,
+        passout_year: edu.passout_year ?? defaultDate,
+        CGPA: Number(edu.CGPA) || 0,
       })),
       certifications: candidate.certifications.map((cert) => ({
-        name: cert.name ?? "",
-        issuingCompany: cert.company ?? "",
-        issueDate: cert.issueDate?.toISOString().split("T")[0] ?? "",
-        expiryDate: cert.expirationDate?.toISOString().split("T")[0] ?? undefined,
+        name: cert.name,
+        company: cert.company,
+        issueDate: cert.issueDate ?? defaultDate,
+        expirationDate: cert.expirationDate ?? defaultDate,
       })),
-      workExperience: candidate.WorkExperience.map((exp) => ({
-        companyName: exp.name ?? "",
-        position: exp.position ?? "",
-        startDate: exp.startDate?.toISOString().split("T")[0] ?? "",
-        endDate: exp.endDate?.toISOString().split("T")[0] ?? undefined,
+      WorkExperience: candidate.WorkExperience.map((exp) => ({
+        name: exp.name,
+        position: exp.position,
+        startDate: exp.startDate ?? defaultDate,
+        endDate: exp.endDate ?? defaultDate,
         currentlyWorking: exp.currentlyWorking ?? false,
-        description: exp.jobDescription ?? undefined,
+        jobDescription: exp.jobDescription ?? "",
+        companyName: exp.name,
       })),
       acknowledgement: false,
       resume: undefined,

@@ -1,19 +1,28 @@
-"use client";
+"use client"
 
-import { Job } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { Briefcase, MapPin, Building2, Clock } from "lucide-react";
-import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
-import { formatSalary } from "@/lib/utils";
+import { Button } from "@/components/ui/button"
+import { Briefcase, MapPin, Building2, Clock } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import { formatDistanceToNow } from "date-fns"
+import { formatSalary } from "@/lib/utils"
+
+interface Job {
+  id: string
+  title: string
+  location: string
+  type: string
+  createdAt: Date | string
+  skills: string[]
+  salary?: number | null
+  company: {
+    name: string
+    logo?: string | null
+  }
+}
 
 interface JobCardProps {
-  job: Job & {
-    company: {
-      name: string;
-      logo?: string | null;
-    };
-  };
+  job: Job
 }
 
 export default function JobCard({ job }: JobCardProps) {
@@ -21,10 +30,12 @@ export default function JobCard({ job }: JobCardProps) {
     <div className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
         {job.company.logo ? (
-          <img
-            src={job.company.logo}
+          <Image
+            src={job.company.logo || "/placeholder.svg"}
             alt={job.company.name}
-            className="w-12 h-12 rounded-lg object-cover"
+            width={48}
+            height={48}
+            className="rounded-lg object-cover"
           />
         ) : (
           <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -41,7 +52,7 @@ export default function JobCard({ job }: JobCardProps) {
             </span>
             <span className="flex items-center gap-1">
               <Briefcase className="h-4 w-4" />
-              {job.type.replace(/_/g, ' ')}
+              {job.type.replace(/_/g, " ")}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
@@ -50,10 +61,7 @@ export default function JobCard({ job }: JobCardProps) {
           </div>
           <div className="flex flex-wrap gap-2 mb-4">
             {job.skills.slice(0, 3).map((skill) => (
-              <span
-                key={skill}
-                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-              >
+              <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
                 {skill}
               </span>
             ))}
@@ -63,12 +71,8 @@ export default function JobCard({ job }: JobCardProps) {
               </span>
             )}
           </div>
-          <div className="text-sm text-gray-600">
-            {job.salary ? (
-              <span>{formatSalary(job.salary)}</span>
-            ) : (
-              <span>Salary not specified</span>
-            )}
+          <div className="text-sm text-gray-600 mb-4">
+            {job.salary ? <span>{formatSalary(job.salary)}</span> : <span>Salary not specified</span>}
           </div>
           <Button asChild>
             <Link href={`/jobs/${job.id}`}>View Details</Link>
@@ -76,5 +80,5 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

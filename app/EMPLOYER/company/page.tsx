@@ -1,20 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { Company, Industry, Sector } from "@prisma/client"
 import { getCompanyByUserId } from "@/actions/company-actions/get-company"
 import { updateCompany } from "@/actions/company-actions/update-company"
-import { createCompanyForEmployer } from "@/actions/company-actions/create-company"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "sonner"
+import { Textarea } from "@/components/ui/textarea"
+import { Company, Industry, Sector } from "@prisma/client"
 import { Loader2 } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 type FormData = {
   name: string
@@ -96,9 +95,6 @@ export default function CompanyPage() {
       // Create new company
       setIsCreating(true)
       try {
-        const newCompany = await createCompanyForEmployer(session.user.id)
-        await updateCompany(newCompany.id, formData)
-        setCompany(newCompany)
         toast.success("Company profile created successfully")
       } catch (error) {
         console.error("Error creating company:", error)
@@ -109,7 +105,7 @@ export default function CompanyPage() {
     } else {
       // Update existing company
       try {
-        const response = await updateCompany(company.id, formData)
+        const response = await updateCompany(session.user.id, formData)
         setCompany(response.data)
         setIsEditing(false)
         toast.success("Company details updated successfully")

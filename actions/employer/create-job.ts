@@ -6,6 +6,7 @@ import prisma from "@/lib/prismaDB";
 import { JobType, JobCategory, Prisma } from "@prisma/client";
 
 export async function createJob(data: Prisma.JobCreateInput) {
+  console.log(data, "data");
   try {
     const session = await getServerSession(NEXT_AUTH_CONFIG);
     if (!session?.user?.id) {

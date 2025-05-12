@@ -1,5 +1,6 @@
 "use client";
 import { createCandidateProfile } from "@/actions/candidate-actions/createCandidateProfile";
+import { updateCandidateProfile } from "@/actions/candidate-actions/updateCandidateProfile";
 import {
   Accordion,
   AccordionContent,
@@ -14,13 +15,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
+  import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+  } from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -48,7 +49,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { countriesData } from "@/data/countiries";
 import { statesData } from "@/data/states";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CandidateType } from "@prisma/client";
+import { CandidateType, Gender } from "@prisma/client";
 import {
   Briefcase,
   Calendar,
@@ -72,25 +73,32 @@ import { LGBTQCandidate } from "./LGBTQCANDIDATE";
 import { PWDCandidate } from "./PWDCANDIDATE";
 import { RegularCandidate } from "./REGULARCANDIDATE";
 import { WomenReturningCandidate } from "./WOMENRETURNINGCANDIDATE";
+import { DatePicker } from "@/components/ui/datePicker";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import InputTags from "../inputTags";
 
-const experienceOptions = [
-  "Less than 1 year",
-  "1-3 years",
-  "3-5 years",
-  "5-10 years",
-  "10+ years",
-];
+interface CandidateProfileCompletionProps {
+  userId: string;
+  initialData?: z.infer<typeof formSchema> | null;
+  mode?: 'create' | 'update';
+}
+
+/**
+ * InputTags component for tag-style input, compatible with shadcn/ui and tailwind.
+ * Allows users to add/remove tags (skills) and integrates with react-hook-form.
+ */
+
+
 
 const CandidateProfileCompletion = ({
   userId,
   initialData,
-}: {
-  userId: string;
-  initialData: z.infer<typeof formSchema> | null;
-}) => {
-
+  mode = 'create',
+}: CandidateProfileCompletionProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const router = useRouter();
 
   // States for location dropdowns
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -105,33 +113,38 @@ const CandidateProfileCompletion = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      phone: "",
-      housenumber: "",
+      contact: "",
+      houseNo: 0,
       locality: "",
-      pincode: "",
+      pincode: 0,
       country: "",
-      currentState: "",
-      currentCity: "",
-      dob: "",
-      experience: "",
-      skills: "",
-      bio: "",
-      jobTitle: "",
-      gender: "MALE",
-      candidateType: undefined,
+      state: "",
+      city: "",
+      DOB: new Date(),
+      YOE: 0,
+      skills: [],
+      Bio: "",
+      firstname: "",
+      middlename: "",
+      lastname: "",
+      gender: Gender.MALE,
+      candidateType: CandidateType.REGULAR,
       education: [
         {
           degree: "",
-          specialization: "",
+          specialisation: "",
           institution: "",
-          yearOfCompletion: "",
-          grade: "",
+          passout_year: new Date(),
+          CGPA: 0,
         },
       ],
       certifications: [],
-      workExperience: [],
+      WorkExperience: [],
       acknowledgement: false,
       resume: undefined,
+      pwdCategory: null,
+      LGBTQ: null,
+      employmentBreak: null
     },
   });
 
@@ -145,8 +158,8 @@ const CandidateProfileCompletion = ({
         statesData[selectedCountry as keyof typeof statesData]
       );
       setSelectedState(null);
-      form.setValue("currentState", "");
-      form.setValue("currentCity", "");
+      form.setValue("state", "");
+      form.setValue("city", "");
     } else {
       setAvailableStates([]);
     }
@@ -177,8 +190,8 @@ const CandidateProfileCompletion = ({
   //   }
   // };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!resumeFile) {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!resumeFile && mode === 'create') {
       toast.error("Please upload your resume to continue.");
       return;
     }
@@ -191,31 +204,50 @@ const CandidateProfileCompletion = ({
     setIsLoading(true);
 
     try {
+      // Create FormData for submission
       const formData = new FormData();
-      formData.append("resume", resumeFile);
-      formData.append("values", JSON.stringify(values));
+      
+      // Add resume file if present
+      if (resumeFile) {
+        formData.append('resume', resumeFile);
+      }
 
-      const response = await createCandidateProfile(userId, formData);
+
+      // Add formatted values to FormData
+      formData.append('values', JSON.stringify(values));
+      let response;
+      if (mode === 'create') {
+        response = await createCandidateProfile(userId, formData);
+        console.log(response, "response");
+      } else {
+        response = await updateCandidateProfile(userId, formData);
+      }
 
       if (response.success) {
-        toast.success("Your profile has been successfully completed.");
-        // router.push("/dashboard");
+        toast.success(response.message);
+        // Optionally redirect to profile page or dashboard
+        router.push('/CANDIDATE');
+
       } else {
         toast.error(response.message);
       }
     } catch (error) {
-      toast.error("There was an error saving your profile. Please try again.");
-      console.log(error);
+      console.error('Error submitting form:', error);
+      toast.error(mode === 'create' 
+        ? "There was an error creating your profile. Please try again."
+        : "There was an error updating your profile. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="py-4 px-6 bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-semibold text-gray-900">
-            Complete Your Profile
+            {mode === 'create' ? 'Complete Your Profile' : 'Update Your Profile'}
           </h1>
           <div className="text-sm text-gray-500">
             Required fields are marked with an asterisk (*)
@@ -227,7 +259,9 @@ const CandidateProfileCompletion = ({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">
-              Welcome! Please complete your profile to continue
+              {mode === 'create' 
+                ? 'Welcome! Please complete your profile to continue'
+                : 'Update your profile information'}
             </h2>
             <p className="text-gray-500 mb-6">
               This information will help us personalize your experience and
@@ -236,7 +270,7 @@ const CandidateProfileCompletion = ({
 
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(handleSubmit)}
                 className="space-y-6"
               >
                 {/* Personal Information */}
@@ -251,7 +285,71 @@ const CandidateProfileCompletion = ({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <FormField
                         control={form.control}
-                        name="phone"
+                        name="firstname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              <div className="flex items-center gap-1">
+                                <span>First Name *</span>
+                              </div>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="John"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="middlename"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              <div className="flex items-center gap-1">
+                                <span>Middle Name</span>
+                              </div>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="David"
+                                {...field}
+                                value={field.value || ''}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="lastname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              <div className="flex items-center gap-1">
+                                <span>Last Name *</span>
+                              </div>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Smith"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="contact"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -274,7 +372,7 @@ const CandidateProfileCompletion = ({
                       />
                       <FormField
                         control={form.control}
-                        name="dob"
+                        name="DOB"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -284,23 +382,9 @@ const CandidateProfileCompletion = ({
                               </div>
                             </FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="jobTitle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Current/Desired Job Title *</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="Software Engineer"
-                                {...field}
+                              <DatePicker 
+                                value={field.value} 
+                                onChange={(date) => field.onChange(date || new Date())}
                               />
                             </FormControl>
                             <FormMessage />
@@ -312,7 +396,7 @@ const CandidateProfileCompletion = ({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <FormField
                         control={form.control}
-                        name="housenumber"
+                        name="houseNo"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -322,7 +406,8 @@ const CandidateProfileCompletion = ({
                               </div>
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="78B..." {...field} />
+
+                              <Input onChange={(e) => field.onChange(Number(e.target.value))} placeholder="78B..." />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -361,7 +446,7 @@ const CandidateProfileCompletion = ({
                               </div>
                             </FormLabel>
                             <FormControl>
-                              <Input placeholder="111111..." {...field} />
+                              <Input placeholder="111111..." onChange={(e) => field.onChange(Number(e.target.value))}/>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -438,7 +523,7 @@ const CandidateProfileCompletion = ({
                       {/* State Selection */}
                       <FormField
                         control={form.control}
-                        name="currentState"
+                        name="state"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -458,7 +543,7 @@ const CandidateProfileCompletion = ({
                       {/* City Selection */}
                       <FormField
                         control={form.control}
-                        name="currentCity"
+                        name="city"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -549,7 +634,7 @@ const CandidateProfileCompletion = ({
 
                                   <FormField
                                     control={form.control}
-                                    name={`education.${index}.specialization`}
+                                    name={`education.${index}.specialisation`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>Specialization *</FormLabel>
@@ -587,17 +672,16 @@ const CandidateProfileCompletion = ({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
                                   <FormField
                                     control={form.control}
-                                    name={`education.${index}.yearOfCompletion`}
+                                    name={`education.${index}.passout_year`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>
                                           Year of Completion *
                                         </FormLabel>
                                         <FormControl>
-                                          <Input
-                                            type="number"
-                                            placeholder="2023"
-                                            {...field}
+                                          <DatePicker 
+                                            value={field.value}
+                                            onChange={(date) => field.onChange(date || new Date())}
                                           />
                                         </FormControl>
                                         <FormMessage />
@@ -607,14 +691,14 @@ const CandidateProfileCompletion = ({
 
                                   <FormField
                                     control={form.control}
-                                    name={`education.${index}.grade`}
+                                    name={`education.${index}.CGPA`}
                                     render={({ field }) => (
                                       <FormItem>
-                                        <FormLabel>CGPA/Percentage *</FormLabel>
+                                        <FormLabel>CGPA*</FormLabel>
                                         <FormControl>
                                           <Input
                                             placeholder="3.8 or 85%"
-                                            {...field}
+                                            onChange={(e) => field.onChange(Number(e.target.value))}
                                           />
                                         </FormControl>
                                         <FormMessage />
@@ -646,10 +730,10 @@ const CandidateProfileCompletion = ({
                           onClick={() =>
                             appendEducation({
                               degree: "",
-                              specialization: "",
+                              specialisation: "",
                               institution: "",
-                              yearOfCompletion: "",
-                              grade: "",
+                              passout_year: new Date(),
+                              CGPA: 0,
                             })
                           }
                         >
@@ -701,7 +785,7 @@ const CandidateProfileCompletion = ({
 
                                   <FormField
                                     control={form.control}
-                                    name={`certifications.${index}.issuingCompany`}
+                                    name={`certifications.${index}.company`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>Issuing Company *</FormLabel>
@@ -725,7 +809,10 @@ const CandidateProfileCompletion = ({
                                       <FormItem>
                                         <FormLabel>Issue Date *</FormLabel>
                                         <FormControl>
-                                          <Input type="date" {...field} />
+                                          <DatePicker 
+                                            value={field.value}
+                                            onChange={(date) => field.onChange(date || new Date())}
+                                          />
                                         </FormControl>
                                         <FormMessage />
                                       </FormItem>
@@ -734,14 +821,17 @@ const CandidateProfileCompletion = ({
 
                                   <FormField
                                     control={form.control}
-                                    name={`certifications.${index}.expiryDate`}
+                                    name={`certifications.${index}.expirationDate`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>
                                           Expiry Date (if applicable)
                                         </FormLabel>
                                         <FormControl>
-                                          <Input type="date" {...field} />
+                                          <DatePicker 
+                                            value={field.value}
+                                            onChange={(date) => field.onChange(date || new Date())}
+                                          />
                                         </FormControl>
                                         <FormMessage />
                                       </FormItem>
@@ -776,9 +866,9 @@ const CandidateProfileCompletion = ({
                           onClick={() =>
                             appendCertification({
                               name: "",
-                              issuingCompany: "",
-                              issueDate: "",
-                              expiryDate: "",
+                              company: "",
+                              issueDate: new Date(),
+                              expirationDate: new Date(),
                             })
                           }
                         >
@@ -804,12 +894,12 @@ const CandidateProfileCompletion = ({
                             >
                               <AccordionTrigger className="text-left font-medium">
                                 {form.watch(
-                                  `workExperience.${index}.companyName`
+                                  `WorkExperience.${index}.companyName`
                                 )
                                   ? `${form.watch(
-                                      `workExperience.${index}.position`
+                                      `WorkExperience.${index}.position`
                                     )} at ${form.watch(
-                                      `workExperience.${index}.companyName`
+                                      `WorkExperience.${index}.companyName`
                                     )}`
                                   : `Work Experience ${index + 1}`}
                               </AccordionTrigger>
@@ -817,7 +907,7 @@ const CandidateProfileCompletion = ({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                                   <FormField
                                     control={form.control}
-                                    name={`workExperience.${index}.companyName`}
+                                    name={`WorkExperience.${index}.companyName`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>Company Name *</FormLabel>
@@ -834,7 +924,7 @@ const CandidateProfileCompletion = ({
 
                                   <FormField
                                     control={form.control}
-                                    name={`workExperience.${index}.position`}
+                                    name={`WorkExperience.${index}.position`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>Position *</FormLabel>
@@ -853,12 +943,15 @@ const CandidateProfileCompletion = ({
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
                                   <FormField
                                     control={form.control}
-                                    name={`workExperience.${index}.startDate`}
+                                    name={`WorkExperience.${index}.startDate`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>Start Date *</FormLabel>
                                         <FormControl>
-                                          <Input type="date" {...field} />
+                                          <DatePicker 
+                                            value={field.value}
+                                            onChange={(date) => field.onChange(date || new Date())}
+                                          />
                                         </FormControl>
                                         <FormMessage />
                                       </FormItem>
@@ -867,17 +960,15 @@ const CandidateProfileCompletion = ({
 
                                   <FormField
                                     control={form.control}
-                                    name={`workExperience.${index}.endDate`}
+                                    name={`WorkExperience.${index}.endDate`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>End Date</FormLabel>
                                         <FormControl>
-                                          <Input
-                                            type="date"
-                                            disabled={form.watch(
-                                              `workExperience.${index}.currentlyWorking`
-                                            )}
-                                            {...field}
+                                          <DatePicker 
+                                            value={field.value}
+                                            onChange={(date) => field.onChange(date || new Date())}
+                                            disabled={form.watch(`WorkExperience.${index}.currentlyWorking`)}
                                           />
                                         </FormControl>
                                         <FormMessage />
@@ -892,17 +983,17 @@ const CandidateProfileCompletion = ({
                                     id={`currentlyWorking-${index}`}
                                     className="h-4 w-4"
                                     checked={form.watch(
-                                      `workExperience.${index}.currentlyWorking`
+                                      `WorkExperience.${index}.currentlyWorking`
                                     )}
                                     onChange={(e) => {
                                       form.setValue(
-                                        `workExperience.${index}.currentlyWorking`,
+                                        `WorkExperience.${index}.currentlyWorking`,
                                         e.target.checked
                                       );
                                       if (e.target.checked) {
                                         form.setValue(
-                                          `workExperience.${index}.endDate`,
-                                          ""
+                                          `WorkExperience.${index}.endDate`,
+                                          new Date()
                                         );
                                       }
                                     }}
@@ -915,7 +1006,7 @@ const CandidateProfileCompletion = ({
                                 <div className="py-4">
                                   <FormField
                                     control={form.control}
-                                    name={`workExperience.${index}.description`}
+                                    name={`WorkExperience.${index}.jobDescription`}
                                     render={({ field }) => (
                                       <FormItem>
                                         <FormLabel>Job Description</FormLabel>
@@ -975,27 +1066,16 @@ const CandidateProfileCompletion = ({
 
                     <FormField
                       control={form.control}
-                      name="experience"
+                      name="YOE"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Years of Experience *</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select your experience level" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {experienceOptions.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormControl>
+                            <Input
+                              placeholder="2"
+                              onChange={(e) => field.onChange(Number(e.target.value))}
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1008,9 +1088,10 @@ const CandidateProfileCompletion = ({
                         <FormItem>
                           <FormLabel>Key Skills *</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="React, JavaScript, Project Management, etc."
-                              {...field}
+                            <InputTags
+                              value={Array.isArray(field.value) ? field.value : []}
+                              onChange={field.onChange}
+                              placeholder="Add a skill and press Enter or comma"
                             />
                           </FormControl>
                           <FormMessage />
@@ -1020,7 +1101,7 @@ const CandidateProfileCompletion = ({
 
                     <FormField
                       control={form.control}
-                      name="bio"
+                      name="Bio"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Professional Bio *</FormLabel>
@@ -1231,12 +1312,12 @@ const CandidateProfileCompletion = ({
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving Profile...
+                        {mode === 'create' ? 'Creating Profile...' : 'Updating Profile...'}
                       </>
                     ) : (
                       <>
                         <Check className="mr-2 h-4 w-4" />
-                        Complete Profile
+                        {mode === 'create' ? 'Complete Profile' : 'Update Profile'}
                       </>
                     )}
                   </Button>

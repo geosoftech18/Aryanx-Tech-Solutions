@@ -1,5 +1,8 @@
 import { getFeaturedJobs } from "@/actions/jobs/get-featured-jobs";
 import { getJobCategoriesWithCounts } from "@/actions/jobs/get-job-categories";
+import BusinessImpactSection from "@/components/home/business-impact";
+import FeatureSlider from "@/components/home/feature-slider";
+import PartnersCarousel from "@/components/home/partner-carousel";
 import CategoryCard from "@/components/jobs/CategoryCard";
 import JobCard from "@/components/jobs/JobCard";
 import SearchBar from "@/components/jobs/SearchBar";
@@ -20,13 +23,14 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 py-16">
+      <FeatureSlider />
+      <section className="bg-gray-200 py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-blue-600">
               Find Your Dream Job Today
             </h1>
-            <p className="text-xl mb-8 text-blue-100">
+            <p className="text-xl mb-8 text-gray-600">
               Connect with thousands of employers and take the next step in your
               career.
             </p>
@@ -63,7 +67,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:mx-20">
             {jobCategories.map((category) => (
               <CategoryCard 
                 key={category.category} 
@@ -88,7 +92,7 @@ export default async function HomePage() {
       {/* Featured Jobs */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-10">
+          <div className="flex justify-between items-center mb-10 md:mx-20">
             <h2 className="text-3xl font-bold">Featured Jobs</h2>
             <Link
               href="/jobs"
@@ -98,16 +102,18 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:mx-20">
             {featuredJobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
           </div>
         </div>
       </section>
+      <PartnersCarousel />
+      <BusinessImpactSection />
 
       {/* How It Works Section */}
-      <section className="py-16 bg-slate-50">
+      <section className="py-16 bg-slate-50 px-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">How JobSphere Works</h2>
@@ -123,8 +129,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Create an Account</h3>
               <p className="text-slate-600">
-                Sign up and create your profile with your experience, skills,
-                and resume.
+                Sign up and create your profile with your experience, skills, and resume.
               </p>
             </div>
 
@@ -134,8 +139,7 @@ export default async function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Find Matching Jobs</h3>
               <p className="text-slate-600">
-                Search for jobs that match your skills and preferences, or
-                receive personalized recommendations.
+                Search for jobs that match your skills and preferences, or receive personalized recommendations.
               </p>
             </div>
 
@@ -143,12 +147,9 @@ export default async function HomePage() {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">
-                Apply and Get Hired
-              </h3>
+              <h3 className="text-xl font-semibold mb-3">Apply and Get Hired</h3>
               <p className="text-slate-600">
-                Submit your application with just a few clicks and track your
-                application status.
+                Submit your application with just a few clicks and track your application status.
               </p>
             </div>
           </div>
@@ -162,7 +163,7 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white  py-16">
+      <section className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white  py-16 px-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-6">
