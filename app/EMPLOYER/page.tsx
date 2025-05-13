@@ -17,10 +17,16 @@ const EmployerPage = async () => {
     message: string;
   } = await isEmployerProfileComplete(session.user.id);
 
+  // Handle case where user is not an employer
+  if (isProfileComplete.message === "User is not an employer. Access denied.") {
+    return <div className="p-6 text-red-600 font-semibold">Access denied: You are not registered as an employer.</div>;
+  }
+
   if (!isProfileComplete.isComplete) {
     return (
       <div className="p-20">
         <CompanyForm userId={session.user.id} initialData={null} />
+        <div className="mt-4 text-yellow-700 font-medium">{isProfileComplete.message}</div>
       </div>
     );
   } else {

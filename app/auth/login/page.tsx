@@ -2,18 +2,19 @@
 import { generateAndSendOTP } from "@/actions/auth/generateAndSendOTP";
 import { getRole } from "@/actions/auth/getRole";
 import { isEmailVerified } from "@/actions/auth/isEmailVerified";
+import LinkedInSignInDropdown from "@/components/auth/LinkedInSignInDropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSlot
+  InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Role } from "@prisma/client";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
-import { Linkedin, Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Lock, Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -252,14 +253,11 @@ const Login = () => {
             </div>
 
             <div className="mt-6 space-y-4">
-              <Button
-                variant="outline"
-                type="button"
-                className="w-full border-2 border-gray-300"
-              >
-                <Linkedin className="mr-2 h-5 w-5 text-[#0077B5]" />
-                Sign in with LinkedIn
-              </Button>
+              <LinkedInSignInDropdown
+                buttonLabel="Sign in with LinkedIn"
+                candidateCallbackUrl="/CANDIDATE"
+                employerCallbackUrl="/EMPLOYER"
+              />
             </div>
 
             <p className="mt-8 text-xs text-gray-500 text-center">

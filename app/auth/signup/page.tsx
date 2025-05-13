@@ -1,19 +1,21 @@
 "use client";
-import { useState } from "react";
+import { createUser } from "@/actions/auth/createUser";
+import LinkedInSignInDropdown from "@/components/auth/LinkedInSignInDropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { User, Mail, Lock, Briefcase, Loader2, Linkedin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
-import { toast } from "react-hot-toast";
-import { createUser } from "@/actions/auth/createUser";
 import { Role } from "@prisma/client";
+import { Briefcase, Loader2, Lock, Mail, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
-  const [midName, setMidName]  = useState("");
+  const [midName, setMidName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +27,7 @@ const Signup = () => {
     e.preventDefault();
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      toast.error( "Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
@@ -40,25 +42,26 @@ const Signup = () => {
     try {
       const res = await createUser({
         email: email,
-         password: password,
-         firstname:firstName, 
-         middlename: midName,
-         lastname: lastName,
-         role:userType
-      })
+        password: password,
+        firstname: firstName,
+        middlename: midName,
+        lastname: lastName,
+        role: userType,
+      });
 
-      if(res.success && res.message){
+      if (res.success && res.message) {
         toast.success(res.message);
-      }else{
-        toast.error(res.message)
+      } else {
+        toast.error(res.message);
       }
-     
 
       // Reset form or redirect to login
       // history.push("/login");
     } catch (error) {
       console.log(error);
-      toast.error("There was an error creating your account. Please try again.");
+      toast.error(
+        "There was an error creating your account. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -72,8 +75,8 @@ const Signup = () => {
         <div className="max-w-[600px] mx-auto">
           <h2 className="text-2xl font-semibold text-gray-900 mb-1">Sign up</h2>
           <p className="text-sm text-gray-600 mb-8">
-            Enter your account details here + {userType}
-          </p> 
+            Enter your account details here
+          </p>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
@@ -81,7 +84,7 @@ const Signup = () => {
               <RadioGroup
                 defaultValue={Role.CANDIDATE}
                 value={userType}
-                onValueChange={(value)=>setUserType(value as Role)}
+                onValueChange={(value) => setUserType(value as Role)}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
               >
                 <div className="flex items-center space-x-2 bg-gray-50 p-3 rounded-md border border-gray-200">
@@ -95,7 +98,7 @@ const Signup = () => {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2 bg-gray-50 p-3 rounded-md border border-gray-200">
-                  <RadioGroupItem value={Role.EMPLOYER} id={Role.EMPLOYER}/>
+                  <RadioGroupItem value={Role.EMPLOYER} id={Role.EMPLOYER} />
                   <Label
                     htmlFor={Role.EMPLOYER}
                     className="cursor-pointer flex items-center gap-2"
@@ -236,14 +239,12 @@ const Signup = () => {
             </div>
 
             <div className="mt-6">
-              <Button
-                variant="outline"
-                type="button"
-                className="w-full border-2 border-gray-300"
-              >
-                <Linkedin className="mr-2 h-5 w-5 text-[#0077B5]" />
-                Sign up with LinkedIn
-              </Button>
+              {/* LinkedIn Signup Dropdown */}
+              <LinkedInSignInDropdown
+                buttonLabel="Sign up with LinkedIn"
+                candidateCallbackUrl="/CANDIDATE"
+                employerCallbackUrl="/EMPLOYER"
+              />
             </div>
 
             <p className="mt-8 text-sm text-gray-500 text-center">
@@ -254,35 +255,51 @@ const Signup = () => {
       </div>
 
       {/* Right Section - Sign In CTA */}
-      <div className="w-full md:w-1/2 bg-gray-50 flex flex-col justify-center px-6 md:px-12 lg:px-16 py-8">
-        <div className="max-w-[350px] mx-auto">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            Sign in using...
-          </h2>
-          <p className="text-sm text-gray-600 mb-8">
-            You can use your other social accounts to sign in
-          </p>
-
-          <div className="space-y-4">
-            <Button
-              variant="outline"
-              type="button"
-              className="w-full border-2 border-gray-300"
-            >
-              <Linkedin className="mr-2 h-5 w-5 text-[#0077B5]" />
-              Sign in with LinkedIn
-            </Button>
+      <div className="w-full md:w-1/2 bg-gray-50 flex flex-col justify-center px-6 md:px-12 lg:px-24 py-8">
+        <div className="max-w-[450px] mx-auto">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-6">Sign in</h2>
+          <Image
+            src="/jobFilter.png"
+            alt="Job search illustration"
+            className="w-full rounded-lg mb-8"
+            width={500}
+            height={500}
+          />
+          <div className="space-y-4 mb-8">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 mt-1">
+                <div className="h-4 w-4 text-green-500">✓</div>
+              </div>
+              <p className="ml-2 text-sm text-gray-600">
+                View your job matches and saved jobs on any device
+              </p>
+            </div>
+            <div className="flex items-start">
+              <div className="flex-shrink-0 mt-1">
+                <div className="h-4 w-4 text-green-500">✓</div>
+              </div>
+              <p className="ml-2 text-sm text-gray-600">
+                Apply for jobs with one click
+              </p>
+            </div>
+            <div className="flex items-start">
+              <div className="flex-shrink-0 mt-1">
+                <div className="h-4 w-4 text-green-500">✓</div>
+              </div>
+              <p className="ml-2 text-sm text-gray-600">
+                Manage your job alerts
+              </p>
+            </div>
           </div>
-
-          <p className="mt-8 text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link
-              href="/auth/login"
-              className="text-blue-600 hover:text-blue-500"
+          <Link href="/auth/login">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-2 border-blue-700 text-blue-700 hover:bg-blue-50"
             >
-              Sign in here
-            </Link>
-          </p>
+              Log into your account
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

@@ -22,6 +22,11 @@ const CandidatePage = async () => {
     isComplete?: boolean;
     message: string;
   } = await isCandidateProfileComplete(session.user.id);
+
+  // Handle case where user is not a candidate
+  if (isProfileComplete.message === "User is not a candidate. Access denied.") {
+    return <div className="p-6 text-red-600 font-semibold">Access denied: You are not registered as a candidate.</div>;
+  }
   //   await deleteCandidate(session.user.id);
   //   console.log(isProfileComplete);
 

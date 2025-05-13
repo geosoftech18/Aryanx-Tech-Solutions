@@ -16,6 +16,18 @@ export async function isEmployerProfileComplete(userId: string): Promise<{
       };
     }
 
+    // Check if user has role EMPLOYER
+    const user = await prismadb.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    if (!user || user.role !== "EMPLOYER") {
+      return {
+        success: false,
+        message: "User is not an employer. Access denied.",
+      };
+    }
+
     // Find candidate by userId
     const company = await prismadb.company.findUnique({
       where: { userId },

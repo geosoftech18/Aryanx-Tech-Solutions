@@ -16,6 +16,18 @@ export async function isCandidateProfileComplete(userId: string): Promise<{
       };
     }
 
+    // Check if user has role CANDIDATE
+    const user = await prismadb.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    if (!user || user.role !== "CANDIDATE") {
+      return {
+        success: false,
+        message: "User is not a candidate. Access denied.",
+      };
+    }
+
     // Find candidate by userId
     const candidate = await prismadb.candidate.findUnique({
       where: { userId },
