@@ -1,7 +1,7 @@
 import {
   listLatestApplications
 } from "@/actions/admin/applications/list-latest-applications";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,10 +31,10 @@ export async function RecentApplications() {
               className="flex items-center gap-4 p-2 rounded-md light-table-row-hover"
             >
               <Avatar className="h-8 w-8 border border-gray-200">
-                <AvatarImage
+                {/* <AvatarImage
                   src={application.avatar || "/placeholder.svg"}
                   alt={application.name}
-                />
+                /> */}
                 <AvatarFallback className="bg-gray-100 text-gray-700">
                   {application.name.charAt(0)}
                 </AvatarFallback>

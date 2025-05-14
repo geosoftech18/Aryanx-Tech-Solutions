@@ -1,7 +1,7 @@
 "use client";
 
 import { getApplicationDetails } from "@/actions/application/employer-actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -174,10 +174,10 @@ const ApplicationDetailsModal: React.FC<ApplicationDetailsModalProps> = ({ appli
               <div className="flex flex-col md:flex-row justify-between gap-4">
                 <div className="flex gap-4">
                   <Avatar className="h-12 w-12 rounded-md">
-                    <AvatarImage
+                    {/* <AvatarImage
                       src={`/abstract-geometric-shapes.png?height=48&width=48&query=${application.name.substring(0, 2)}`}
                       alt={application.name}
-                    />
+                    /> */}
                     <AvatarFallback className="rounded-md bg-primary/10 text-primary">
                       {application.name.substring(0, 2)}
                     </AvatarFallback>

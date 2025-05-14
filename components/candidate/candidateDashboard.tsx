@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
+import { formatSalary } from "@/lib/utils";
 import {
   type Application,
   ApplicationStatus,
@@ -37,7 +38,6 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type React from "react";
 import ApplicationDetailsModal from "./application-details-modal";
-import { formatSalary } from "@/lib/utils";
 
 interface CandidateDashboardProps {
   applications: (Application & Job & Company)[];
@@ -106,7 +106,7 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="h-20 w-20 border-4 border-background shadow-lg">
-              <AvatarImage src="/vibrant-street-market.png" alt={userName} />
+              {/* <AvatarImage src="/vibrant-street-market.png" alt={userName} /> */}
               <AvatarFallback className="text-xl bg-primary/10 text-primary">
                 {userName
                   .split(" ")
@@ -289,7 +289,7 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
               <CardHeader className="p-4 pb-0 flex flex-row items-start gap-3">
                 <Avatar className="h-10 w-10 rounded-md">
                   <AvatarImage
-                    src={job.company.logo || "/placeholder.svg"}
+                    // src={job.company.logo || "/placeholder.svg"}
                     alt={job.company.name}
                   />
                   <AvatarFallback className="rounded-md bg-primary/10 text-primary">

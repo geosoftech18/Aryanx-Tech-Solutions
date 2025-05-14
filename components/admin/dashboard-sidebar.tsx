@@ -4,7 +4,7 @@ import { BarChart3, Briefcase, Building2, FileText, LayoutDashboard, LogOut, Use
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Sidebar,
@@ -172,7 +172,7 @@ export function DashboardSidebar() {
         <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8 border border-gray-200">
-              <AvatarImage src="/abstract-admin-interface.png" alt="Admin" />
+              {/* <AvatarImage src="/abstract-admin-interface.png" alt="Admin" /> */}
               <AvatarFallback className="bg-gray-100 text-gray-700">AD</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">

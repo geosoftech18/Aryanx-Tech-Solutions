@@ -61,7 +61,7 @@ export function CompaniesTable() {
         setError("Failed to load companies")
         setLoading(false)
       })
-  }, [debouncedSearch, filters.page, filters.pageSize])
+  }, [debouncedSearch, filters.page, filters.pageSize,filters])
 
   // Handle delete
   const onDelete = async (companyId: string) => {

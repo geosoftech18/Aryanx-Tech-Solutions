@@ -91,7 +91,7 @@ export function UsersTable() {
         setError("Failed to load users")
         setLoading(false)
       })
-  }, [debouncedSearch, filters.role, filters.status, filters.page, filters.pageSize, filters.sortBy, filters.sortOrder])
+  }, [debouncedSearch, filters.role, filters.status, filters.page, filters.pageSize, filters.sortBy, filters.sortOrder, filters])
 
   // Modular cell actions for each user row (uses closure for state/handlers)
   const UsersTableCellActions = ({ user }: { user: User & { name: string; status: string } }) => {

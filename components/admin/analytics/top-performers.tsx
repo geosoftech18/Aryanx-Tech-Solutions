@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import type { AdminTopPerformers } from "@/actions/admin/analytics/get-admin-top-performers"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { AdminTopPerformers } from "@/actions/admin/analytics/get-admin-top-performers"
 
 interface TopPerformersProps {
   data: AdminTopPerformers
@@ -47,7 +47,7 @@ export function TopPerformers({ data }: TopPerformersProps) {
               <div key={company.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={company.logo || "/placeholder.svg"} alt={company.name} />
+                    {/* <AvatarImage src={company.logo || "/placeholder.svg"} alt={company.name} /> */}
                     <AvatarFallback>{company.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
