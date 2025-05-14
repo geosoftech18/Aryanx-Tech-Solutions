@@ -13,14 +13,26 @@ export async function getRecommendedJobsForCandidate(userId: string): Promise<(J
     // Fetch the candidate to get their candidateType
     const candidate = await prismadb.candidate.findUnique({
       where: { userId },
-      select: { candidateType: true },
+      select: { candidateType: true, id: true }, // Also select candidate id
     });
     if (!candidate) {
       throw new Error("Candidate not found");
     }
-    // Fetch jobs where jobFor matches candidateType
+
+    // Fetch job IDs the candidate has already applied for
+    const applications = await prismadb.application.findMany({
+      where: { candidateId: candidate.id },
+      select: { jobId: true },
+    });
+    const appliedJobIds = applications.map(app => app.jobId);
+
+    // Fetch jobs where jobFor matches candidateType and candidate has not applied
     const jobs = await prismadb.job.findMany({
-      where: { jobFor: candidate.candidateType, isActive: true },
+      where: {
+        jobFor: { has: candidate.candidateType },
+        isActive: true,
+        id: { notIn: appliedJobIds },
+      },
       include: { company: true },
     });
     return jobs;

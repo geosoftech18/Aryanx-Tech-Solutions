@@ -29,7 +29,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Job, JobCategory, JobType } from "@prisma/client";
+import { CandidateType, EmploymentType, Job, JobCategory, WorkMode } from "@prisma/client";
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -52,13 +52,16 @@ type JobFormValues = Pick<
   | "skills"
   | "isFeatured"
   | "isActive"
+  | "workMode"
+  | "jobFor"
 >;
 // Define schema that matches the form values type exactly
 const jobFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  location: z.string().min(2, "Location must be at least 2 characters"),
-  type: z.nativeEnum(JobType),
+  location: z.array(z.string()).min(1, "Location must be at least 1 characters"),
+  type: z.nativeEnum(EmploymentType),
+  workMode: z.nativeEnum(WorkMode),
   category: z.nativeEnum(JobCategory),
   salary: z.number().nullable(),
   deadline: z.date(),
@@ -66,6 +69,7 @@ const jobFormSchema = z.object({
   skills: z.array(z.string()).min(1, "Skills are required"),
   isFeatured: z.boolean(),
   isActive: z.boolean(),
+  jobFor: z.array(z.nativeEnum(CandidateType)),
 }) satisfies z.ZodType<JobFormValues>;
 
 export default function JobForm({
@@ -85,8 +89,9 @@ export default function JobForm({
     defaultValues: initialData || {
       title: "",
       description: "",
-      location: "",
-      type: JobType.FULL_TIME,
+      location: [],
+      type: EmploymentType.FULL_TIME,
+      workMode: WorkMode.REMOTE,
       category: JobCategory.SOFTWARE_DEVELOPMENT,
       salary: null,
       deadline: new Date(),
@@ -94,6 +99,7 @@ export default function JobForm({
       skills: [],
       isFeatured: false,
       isActive: true,
+      jobFor: [],   
     },
   });
 
@@ -183,7 +189,11 @@ export default function JobForm({
                     <FormItem>
                       <FormLabel>Location</FormLabel>
                       <FormControl>
-                        <Input placeholder="Remote" {...field} />
+                        <InputTags
+                          value={Array.isArray(field.value) ? field.value : []}
+                          onChange={field.onChange}
+                          placeholder="Add a location and press Enter or comma"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -206,7 +216,7 @@ export default function JobForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.values(JobType).map((type) => (
+                          {Object.values(EmploymentType).map((type) => (
                             <SelectItem key={type} value={type}>
                               {type.replace(/_/g, " ")}
                             </SelectItem>
@@ -339,6 +349,38 @@ export default function JobForm({
                           onChange={field.onChange}
                           placeholder="Add a skill and press Enter or comma"
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Job For (CandidateType) Multi-Select as Checkbox Group */}
+                <FormField
+                  control={form.control}
+                  name="jobFor"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Job For (Candidate Type)</FormLabel>
+                      <FormControl>
+                        <div className="flex flex-wrap gap-3">
+                          {Object.values(CandidateType).map((type) => (
+                            <label key={type} className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={field.value.includes(type)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    field.onChange([...field.value, type]);
+                                  } else {
+                                    field.onChange(field.value.filter((t: string) => t !== type));
+                                  }
+                                }}
+                              />
+                              <span>{type.replace(/_/g, " ")}</span>
+                            </label>
+                          ))}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

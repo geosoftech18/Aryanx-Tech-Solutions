@@ -24,7 +24,7 @@ export async function notifyNewJob(jobId: string) {
       where: {
         // Add any matching criteria here
         // For example, matching skills, experience, etc.
-        candidateType: job.jobFor,
+        candidateType: { in: job.jobFor },
       },
       include: {
         user: true,

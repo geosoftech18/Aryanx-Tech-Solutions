@@ -20,6 +20,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { verifyPassword } from "@/actions/auth/verifyPassword";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -40,6 +41,15 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      // Step 1: Verify password before proceeding
+      const passwordCheck = await verifyPassword(email, password);
+      if (!passwordCheck.success) {
+        toast.error(passwordCheck.message);
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Check if email is verified
       const isEmailVerifiedResponse: {
         success: boolean;
         emailVerified?: boolean;
@@ -48,9 +58,11 @@ const Login = () => {
 
       if (!isEmailVerifiedResponse.success) {
         toast.error(isEmailVerifiedResponse.message);
+        setIsLoading(false);
         return;
       }
 
+      // Step 3: Get user role
       const getRoleResponse: {
         success: boolean;
         role?: Role;
@@ -59,11 +71,12 @@ const Login = () => {
 
       if (!getRoleResponse.success || !getRoleResponse.role) {
         toast.error(getRoleResponse.message);
+        setIsLoading(false);
         return;
       }
 
-      //   console.log(isEmailVerifiedResponse,getRoleResponse);
       setRole(getRoleResponse.role);
+      // Step 4: Generate and send OTP
       const sendOTPResponse: {
         success: boolean;
         role?: Role;
@@ -72,6 +85,7 @@ const Login = () => {
 
       if (!sendOTPResponse.success) {
         toast.error(sendOTPResponse.message);
+        setIsLoading(false);
         return;
       } else {
         toast.success(sendOTPResponse.message);

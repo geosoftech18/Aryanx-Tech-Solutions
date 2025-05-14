@@ -1,50 +1,32 @@
-import { getJobs } from "@/actions/jobs/get-jobs";
+import { getJobs, SearchParams } from "@/actions/jobs/get-jobs";
 import JobCard from "@/components/jobs/JobCard";
 import JobFilters from "@/components/jobs/JobFilters";
 import SearchBar from "@/components/jobs/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Industry, JobCategory, JobType, Sector } from "@prisma/client";
+import { Industry, JobCategory, EmploymentType, WorkMode, Sector } from "@prisma/client";
 import Link from "next/link";
 
 interface JobsPageProps {
-  searchParams: Promise<{
-    q?: string;
-    location?: string;
-    salaryMin?: string;
-    salaryMax?: string;
-    type?: string;
-    category?: string;
-    industry?: string;
-    sector?: string;
-  }>;
+  searchParams: Promise<SearchParams>
 }
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
-  // const params = {
-  //   q: searchParams.q ?? "",
-  //   location: searchParams.location ?? "",
-  //   salaryMin: searchParams.salaryMin ? parseInt(searchParams.salaryMin) : undefined,
-  //   salaryMax: searchParams.salaryMax ? parseInt(searchParams.salaryMax) : undefined,
-  //   type: searchParams.type as JobType | undefined,
-  //   category: searchParams.category as JobCategory | undefined,
-  //   industry: searchParams.industry as Industry ?? undefined,
-  //   sector: searchParams.sector as Sector?? undefined,
-  // };
 
   const sparams = await searchParams;
 
   const params = {
     q: sparams.q ?? "",
     location: sparams.location ?? "",
-    salaryMin: sparams.salaryMin ? parseInt(sparams.salaryMin) : undefined,
-    salaryMax: sparams.salaryMax ? parseInt(sparams.salaryMax) : undefined,
-    type: sparams.type as JobType | undefined,
+    salaryMin: sparams.salaryMin ?? undefined,
+    salaryMax: sparams.salaryMax ?? undefined,
+    type: sparams.type as EmploymentType | undefined,
     category: sparams.category as JobCategory | undefined,
     industry: (sparams.industry as Industry) ?? undefined,
     sector: (sparams.sector as Sector) ?? undefined,
-  };
+    workMode: sparams.workMode as WorkMode | undefined,
+  } as SearchParams;
 
-  const jobs = await getJobs(params);
+  const jobs = await getJobs({...params});
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -64,8 +46,9 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
             <JobFilters
-              selectedType={params.type as JobType}
+              selectedType={params.type as EmploymentType}
               selectedCategory={params.category as JobCategory}
+              selectedWorkMode={params.workMode as WorkMode}
             />
           </div>
 

@@ -1,7 +1,8 @@
 "use server";
 
 import prismadb from "@/lib/prismaDB";
-import { ApplicationStatus, Application, Job, Candidate, User, Company, Education, WorkExperience, Certification } from "@prisma/client";
+import { ApplicationStatus, Application, Job, Candidate, User, Company, Education, WorkExperience, Certification, NotificationType, Notification } from "@prisma/client";
+import { createNotification } from "@/actions/notifications/create-notification";
 
 interface GetCompanyApplicationsParams {
   userId: string;
@@ -105,11 +106,37 @@ export async function getApplicationDetails(applicationId: string): Promise<Appl
 export async function updateApplicationStatus(
   applicationId: string,
   status: ApplicationStatus
-): Promise<Application> {
+): Promise<{ application: Application; notification?: Notification }> {
+  // Update the application status
   const application = await prismadb.application.update({
     where: { id: applicationId },
     data: { status },
+    include: {
+      Candidate: {
+        include: {
+          user: true,
+        },
+      },
+      job: true,
+    },
   });
 
-  return application;
+  // Create a notification for the candidate if possible
+  let notification = undefined;
+  if (application.Candidate && application.Candidate.user) {
+    const notifResult = await createNotification({
+      type: NotificationType.APPLICATION_STATUS_UPDATED,
+      title: 'Application Status Updated',
+      message: `Your application for ${application.job.title} is now ${status}.`,
+      recipientId: application.Candidate.user.id,
+      jobId: application.job.id,
+      applicationId: application.id,
+      shouldEmail: true,
+    });
+    if (notifResult.success) {
+      notification = notifResult.notification;
+    }
+  }
+
+  return { application, notification };
 } 

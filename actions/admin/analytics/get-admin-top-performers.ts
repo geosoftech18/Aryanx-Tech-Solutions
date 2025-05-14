@@ -9,7 +9,7 @@ export interface TopJob {
   id: string
   title: string
   company: string
-  location: string
+  location: string[]
   applications: number
   conversionRate: string // e.g. '22%'
 }

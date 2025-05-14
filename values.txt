@@ -11,17 +11,17 @@ I want you to observe the whole structure of the jobs page, namely how I have cr
  which checks the url for create or jobId and reused the job form for the same@page.tsx @page.tsx @job-form.tsx and how I have used Pick from the prisma schema type of job to define the job schema. and Implement similar structure for the application page.@applications  I want you to do the full implementation
 
 08/05/25 changes:
-women, veteran, women returning
-multiple locations for particular job
-on job card - job type (WFH,onsite,hybrid) rxp range
-on candidate application card - skills and locations and wfh and fulltime and exp range
+women, veteran, women returning -/
+multiple locations for particular job -/
+on job card - job type (WFH,onsite,hybrid) -/
+on candidate application card - skills and locations and wfh and fulltime and exp range -/
 
-in candidate form for women returning give career break
+in candidate form for women returning give career break reason (hold)
 
-select multiple candidate type in creating/updating job
+select multiple candidate type in creating/updating job (hold)
 
-age filter on employer side
+age filter on employer side (hold)
 
-filter by candidate type in applications in admin
+filter by candidate type in applications in admin (hold)
 
-in candidate page in admin we have to add filteration with city state candidate type
+in candidate page in admin we have to add filteration with city state candidate type (hold)

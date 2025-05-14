@@ -37,6 +37,7 @@ import { getServerSession } from "next-auth";
 import Link from "next/link";
 import type React from "react";
 import ApplicationDetailsModal from "./application-details-modal";
+import { formatSalary } from "@/lib/utils";
 
 interface CandidateDashboardProps {
   applications: (Application & Job & Company)[];
@@ -325,7 +326,7 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
                         <circle cx="12" cy="10" r="3" />
                       </svg>
                     </div>
-                    <span>{job.location}</span>
+                    <span>{job.location.join(", ")}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 flex items-center justify-center">
@@ -347,7 +348,7 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
                       </svg>
                     </div>
                     <span className="font-medium text-green-600 dark:text-green-400">
-                      {job.salary ? `$${job.salary}` : "N/A"}
+                      {job.salary ? formatSalary(job.salary) : "N/A"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

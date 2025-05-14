@@ -40,7 +40,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Application, Company, Job, JobType } from "@prisma/client";
+import { Application, Company, Job, EmploymentType, WorkMode, CandidateType } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -50,7 +50,9 @@ import { JobsHeader } from "./jobs-header";
 interface JobsTableFilters {
   search: string;
   status: "active" | "inactive";
-  type: JobType;
+  type: EmploymentType;
+  workMode: WorkMode;
+  jobFor: CandidateType[];
   companyId: string;
   page: number;
   pageSize: number;
@@ -61,7 +63,9 @@ interface JobsTableFilters {
 const defaultFilters: JobsTableFilters = {
   search: "",
   status: "active",
-  type: JobType.FULL_TIME,
+  type: EmploymentType.FULL_TIME,
+  workMode: WorkMode.REMOTE,
+  jobFor: [],
   companyId: "",
   page: 1,
   pageSize: 10,

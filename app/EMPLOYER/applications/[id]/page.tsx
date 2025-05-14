@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useSocket } from "@/hooks/useSocket";
 
 interface ApplicationDetails {
   id: string;
@@ -59,6 +60,7 @@ export default function ApplicationDetailsPage({ params }: PageProps) {
   );
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const { connected, emit } = useSocket();
 
   useEffect(() => {
     const fetchApplication = async () => {
@@ -84,9 +86,16 @@ export default function ApplicationDetailsPage({ params }: PageProps) {
 
     setUpdating(true);
     try {
-      await updateApplicationStatus(application.id, newStatus);
+      const result = await updateApplicationStatus(application.id, newStatus);
       setApplication({ ...application, status: newStatus });
       toast.success("Application status updated successfully");
+      if (result.notification && connected) {
+        emit('emit-to-room', {
+          room: `user-${result.notification.userId}`,
+          event: 'new-notification',
+          data: { notification: result.notification }
+        });
+      }
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update application status");

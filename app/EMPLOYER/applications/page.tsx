@@ -87,7 +87,7 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Applications</h1>
         <div className="flex gap-4">

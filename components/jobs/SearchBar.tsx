@@ -17,8 +17,8 @@ import { useState } from "react";
 interface SearchBarProps {
   initialQuery?: string;
   initialLocation?: string;
-  initialSalaryMin?: number;
-  initialSalaryMax?: number;
+  initialSalaryMin?: string;
+  initialSalaryMax?: string;
   initialIndustry?: Industry;
   initialSector?: Sector;
 }
@@ -55,8 +55,8 @@ export default function SearchBar({
   const [location, setLocation] = useState(initialLocation);
   const [salaryMin, setSalaryMin] = useState(initialSalaryMin?.toString() || "");
   const [salaryMax, setSalaryMax] = useState(initialSalaryMax?.toString() || "");
-  const [industry, setIndustry] = useState<Industry | "">(initialIndustry || "");
-  const [sector, setSector] = useState<Sector | "">(initialSector || "");
+  const [industry, setIndustry] = useState<Industry | "All">(initialIndustry || "All");
+  const [sector, setSector] = useState<Sector | "All">(initialSector || "All");
   const router = useRouter();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -67,8 +67,8 @@ export default function SearchBar({
     if (location) params.set("location", location);
     if (salaryMin) params.set("salaryMin", salaryMin);
     if (salaryMax) params.set("salaryMax", salaryMax);
-    if (industry) params.set("industry", industry);
-    if (sector) params.set("sector", sector);
+    if (industry && industry !== "All") params.set("industry", industry);
+    if (sector && sector !== "All") params.set("sector", sector);
     
     router.push(`/jobs?${params.toString()}`);
   };
@@ -139,11 +139,12 @@ export default function SearchBar({
             </SelectContent>
           </Select>
 
-          <Select value={industry} onValueChange={(value) => setIndustry(value as Industry)}>
+          <Select value={industry} onValueChange={(value) => setIndustry(value as Industry | "All")}>
             <SelectTrigger className="h-12 text-base font-medium border-2 border-gray-200">
               <SelectValue placeholder="Select industry" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="All">All</SelectItem>
               {Object.values(Industry).map((ind) => (
                 <SelectItem key={ind} value={ind}>
                   {formatEnumValue(ind)}
@@ -152,11 +153,12 @@ export default function SearchBar({
             </SelectContent>
           </Select>
 
-          <Select value={sector} onValueChange={(value) => setSector(value as Sector)}>
+          <Select value={sector} onValueChange={(value) => setSector(value as Sector | "All")}>
             <SelectTrigger className="h-12 text-base font-medium border-2 border-gray-200">
               <SelectValue placeholder="Select sector" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="All">All</SelectItem>
               {Object.values(Sector).map((sec) => (
                 <SelectItem key={sec} value={sec}>
                   {formatEnumValue(sec)}

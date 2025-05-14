@@ -6,12 +6,14 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
 import { formatSalary } from "@/lib/utils"
+import { EmploymentType, WorkMode } from "@prisma/client"
 
 interface Job {
   id: string
   title: string
-  location: string
-  type: string
+  location: string[]
+  type: EmploymentType
+  workMode: WorkMode // Work mode: REMOTE, HYBRID, ON_SITE
   createdAt: Date | string
   skills: string[]
   salary?: number | null
@@ -48,11 +50,15 @@ export default function JobCard({ job }: JobCardProps) {
           <div className="flex flex-wrap gap-2 text-sm text-gray-500 mb-4">
             <span className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
-              {job.location}
+              {job.location.join(", ")}
             </span>
             <span className="flex items-center gap-1">
               <Briefcase className="h-4 w-4" />
               {job.type.replace(/_/g, " ")}
+            </span>
+            <span className="flex items-center gap-1">
+              <Briefcase className="h-4 w-4" />
+              {job.workMode.replace(/_/g, " ")}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />

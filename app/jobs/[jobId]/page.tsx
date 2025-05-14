@@ -5,7 +5,7 @@ import JobApplyBox from "@/components/jobs/JobApplyBox";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
-import { CandidateType, JobCategory, JobType } from "@prisma/client";
+import { CandidateType, EmploymentType, JobCategory } from "@prisma/client";
 import { format } from "date-fns";
 import { Briefcase, Calendar, DollarSign, MapPin } from "lucide-react";
 import { getServerSession } from "next-auth";
@@ -20,7 +20,7 @@ interface PageProps {
 interface SimilarJob {
   id: string;
   title: string;
-  type: JobType;
+  type: EmploymentType;
   category: JobCategory;
   company: {
     name: string;
@@ -73,14 +73,18 @@ export default async function JobDetailsPage({ params }: PageProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-gray-500" />
-                  <span>{jobDetails.location}</span>
+                  <span>{jobDetails.location.join(", ")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-gray-500" />
                   <span>{jobDetails.type.replace(/_/g, " ")}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-gray-500" />
+                  <span>{jobDetails.workMode.replace(/_/g, " ")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-gray-500" />

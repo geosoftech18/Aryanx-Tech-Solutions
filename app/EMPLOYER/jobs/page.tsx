@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Job, JobCategory, JobType } from "@prisma/client";
+import { Job, JobCategory, EmploymentType, WorkMode, CandidateType } from "@prisma/client";
 import { format } from "date-fns";
 import { Edit, MoreVertical, Pause, Play, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -33,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AlertModal } from "@/components/ui/alertModal";
+import { formatSalary } from "@/lib/utils";
 
 type JobWithRelations = Job & {
   applications: { id: string }[];
@@ -45,7 +46,12 @@ export default function JobsPage() {
   const [categoryFilter, setCategoryFilter] = useState<JobCategory | "all">(
     "all"
   );
-  const [typeFilter, setTypeFilter] = useState<JobType | "all">("all");
+  const [typeFilter, setTypeFilter] = useState<EmploymentType | "all">("all");
+  const [workModeFilter, setWorkModeFilter] = useState<WorkMode | "all">(
+    "all"
+  );
+  const [locationFilter, ] = useState("");
+  const [jobForFilter, setJobForFilter] = useState<CandidateType[]>([]);
   const [jobs, setJobs] = useState<JobWithRelations[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -134,7 +140,23 @@ export default function JobsPage() {
     const matchesCategory =
       categoryFilter === "all" || job.category === categoryFilter;
     const matchesType = typeFilter === "all" || job.type === typeFilter;
-    return matchesSearch && matchesCategory && matchesType;
+    const matchesWorkMode = workModeFilter === "all" || job.workMode === workModeFilter;
+    const matchesLocation =
+      !locationFilter ||
+      job.location.some((loc) =>
+        loc.toLowerCase().startsWith(locationFilter.toLowerCase())
+      );
+    const matchesJobFor =
+      jobForFilter.length === 0 ||
+      jobForFilter.some((type) => job.jobFor.includes(type));
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesType &&
+      matchesWorkMode &&
+      matchesLocation &&
+      matchesJobFor
+    );
   });
 
   if (isLoading) {
@@ -156,12 +178,17 @@ export default function JobsPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
         <Input
           placeholder="Search jobs..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        {/* <Input
+          placeholder="Filter by location"
+          value={locationFilter}
+          onChange={(e) => setLocationFilter(e.target.value)}
+        /> */}
         <Select
           value={categoryFilter}
           onValueChange={(value: JobCategory | "all") =>
@@ -182,20 +209,58 @@ export default function JobsPage() {
         </Select>
         <Select
           value={typeFilter}
-          onValueChange={(value: JobType | "all") => setTypeFilter(value)}
+          onValueChange={(value: EmploymentType | "all") => setTypeFilter(value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Filter by type" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Types</SelectItem>
-            {Object.values(JobType).map((type) => (
+            {Object.values(EmploymentType).map((type) => (
               <SelectItem key={type} value={type}>
                 {type.replace(/_/g, " ")}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <Select
+          value={workModeFilter}
+          onValueChange={(value: WorkMode | "all") => setWorkModeFilter(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Filter by work mode" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Work Modes</SelectItem>
+            {Object.values(WorkMode).map((mode) => (
+              <SelectItem key={mode} value={mode}>
+                {mode.replace(/_/g, " ")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {/* Job For (CandidateType) Multi-Select Checkbox Group */}
+        <div className="flex flex-col gap-1 border rounded-md p-2 bg-white">
+          <span className="text-xs font-medium text-gray-600 mb-1">Job For</span>
+          <div className="flex flex-wrap gap-2">
+            {Object.values(CandidateType).map((type) => (
+              <label key={type} className="flex items-center gap-1 text-xs">
+                <input
+                  type="checkbox"
+                  checked={jobForFilter.includes(type)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setJobForFilter([...jobForFilter, type]);
+                    } else {
+                      setJobForFilter(jobForFilter.filter((t) => t !== type));
+                    }
+                  }}
+                />
+                {type.replace(/_/g, " ")}
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -206,7 +271,7 @@ export default function JobsPage() {
                 <div>
                   <CardTitle className="text-xl">{job.title}</CardTitle>
                   <CardDescription className="mt-1">
-                    {job.location}
+                    {job.location.join(", ")}
                   </CardDescription>
                 </div>
                 <DropdownMenu>
@@ -250,9 +315,18 @@ export default function JobsPage() {
                 </DropdownMenu>
               </div>
               <div className="flex gap-2 mt-2">
-                <Badge variant="secondary">{job.type}</Badge>
-                <Badge variant="outline">{job.category}</Badge>
-                {job.isFeatured && <Badge variant="default">Featured</Badge>}
+                {/* Badges container: horizontally scrollable and wraps on small screens */}
+                <div className="flex flex-wrap gap-2 mt-2 max-w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  <Badge variant="secondary">{job.type}</Badge>
+                  <Badge variant="outline">{job.category}</Badge>
+                  <Badge variant="outline">{job.workMode}</Badge>
+                  {job.jobFor && job.jobFor.length > 0 && job.jobFor.map((candidateType: string) => (
+                    <Badge key={candidateType} variant="outline">
+                      {candidateType.replace(/_/g, " ")}
+                    </Badge>
+                  ))}
+                  {job.isFeatured && <Badge variant="default">Featured</Badge>}
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -268,7 +342,7 @@ export default function JobsPage() {
                 </p>
                 {job.salary && (
                   <p className="text-sm text-gray-500">
-                    Salary: ${job.salary.toLocaleString()}
+                    Salary: {formatSalary(job.salary)}
                   </p>
                 )}
               </div>

@@ -17,7 +17,7 @@ interface Props {
   jobId: string;
   employerId: string;
   candidateType: CandidateType;
-  jobFor: CandidateType;
+  jobFor: CandidateType[];
 }
 
 const JobApplyBox = ({ company, jobId, candidateType, jobFor }: Props) => {
@@ -69,7 +69,7 @@ const JobApplyBox = ({ company, jobId, candidateType, jobFor }: Props) => {
       <div className="mb-5 p-4 bg-blue-50/90 border border-blue-200 rounded-md flex items-center gap-2">
         <AlertOctagon className="h-5 w-5 text-blue-600" />
         {userRole === "CANDIDATE" ? (
-          candidateType === jobFor ? (
+          jobFor.includes(candidateType) ? (
             <span className="text-blue-700 text-sm">
               Your profile will be shared with <b>{company}</b>. Please ensure
               your info is complete and up to date.
@@ -87,7 +87,7 @@ const JobApplyBox = ({ company, jobId, candidateType, jobFor }: Props) => {
       </div>
 
       <div className="flex gap-3 mt-6">
-        {userRole === "CANDIDATE" && candidateType === jobFor ? (
+        {userRole === "CANDIDATE" && jobFor.includes(candidateType) ? (
           <Button 
             className="bg-gradient-to-r cursor-pointer from-blue-600 to-violet-600 text-white shadow-lg hover:scale-105 transition-transform"
             onClick={handleApply}

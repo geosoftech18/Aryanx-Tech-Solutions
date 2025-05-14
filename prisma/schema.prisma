@@ -90,8 +90,9 @@ model Job {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
-  location     String
-  type         JobType
+  location     String[]
+  type         EmploymentType // Employment type: full-time, part-time, etc.
+  workMode     WorkMode       // Work mode: remote, hybrid, on-site
   category     JobCategory
   salary       Int?
   deadline     DateTime
@@ -105,7 +106,7 @@ model Job {
   notifications Notification[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  jobFor       CandidateType @default(REGULAR)
+  jobFor       CandidateType[] @default([REGULAR])
 }
 
 model Application {
@@ -194,12 +195,17 @@ enum Role {
   ADMIN
 }
 
-enum JobType {
+enum EmploymentType {
   FULL_TIME
   PART_TIME
   CONTRACT
   INTERNSHIP
+}
+
+enum WorkMode {
   REMOTE
+  HYBRID
+  ON_SITE
 }
 
 enum JobCategory {
@@ -225,6 +231,7 @@ enum CandidateType {
   PWD
   LGBTQ
   WOMEN_RETURNING
+  VETERAN
 }
 
 enum Gender {

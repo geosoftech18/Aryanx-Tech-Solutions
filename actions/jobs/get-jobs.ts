@@ -1,50 +1,50 @@
 "use server";
 
 import prismadb from "@/lib/prismaDB";
-import { Job, JobType, JobCategory } from "@prisma/client";
+import { Job, Company } from "@prisma/client";
 
-interface SearchParams {
+type JobParams = Pick<Job, "workMode" | "type" | "category">;
+type CompanyParams = Pick<Company, "industry" | "sector">;
+
+export interface SearchParams extends JobParams, CompanyParams {
   q?: string;
   location?: string;
-  salaryMin?: number;
-  salaryMax?: number;
-  type?: JobType;
-  category?: JobCategory;
-  industry?: string;
-  sector?: string;
+  salaryMin?: string;
+  salaryMax?: string;
 }
+
+// salaryMin and salaryMax are strings as searchParams are strings only, so we need to convert them to numbers
 
 /**
  * Fetches jobs based on search parameters
  * @param searchParams - Search parameters including query and location
  * @returns Array of jobs matching the search criteria
  */
-export async function getJobs(searchParams: SearchParams): Promise<(Job & { company: { name: string; logo?: string | null } })[]> {
+export async function getJobs(
+  searchParams: SearchParams
+): Promise<(Job & { company: { name: string; logo?: string | null } })[]> {
   try {
     const where: any = {};
 
     // Text search
     if (searchParams.q) {
       where.OR = [
-        { title: { contains: searchParams.q, mode: 'insensitive' } },
-        { description: { contains: searchParams.q, mode: 'insensitive' } },
-        { skills: { has: searchParams.q } }
+        { title: { contains: searchParams.q, mode: "insensitive" } },
+        { description: { contains: searchParams.q, mode: "insensitive" } },
+        { skills: { has: searchParams.q } },
+        {
+          company: { name: { contains: searchParams.q, mode: "insensitive" } },
+        },
       ];
     }
-
-    // Location filter
-    if (searchParams.location) {
-      where.location = { contains: searchParams.location, mode: 'insensitive' };
-    }
-
     // Salary range filter
     if (searchParams.salaryMin || searchParams.salaryMax) {
       where.salary = {};
       if (searchParams.salaryMin) {
-        where.salary.gte = searchParams.salaryMin;
+        where.salary.gte = parseInt(searchParams.salaryMin);
       }
       if (searchParams.salaryMax) {
-        where.salary.lte = searchParams.salaryMax;
+        where.salary.lte = parseInt(searchParams.salaryMax);
       }
     }
 
@@ -69,24 +69,36 @@ export async function getJobs(searchParams: SearchParams): Promise<(Job & { comp
       }
     }
 
+    if (searchParams.workMode) {
+      where.workMode = searchParams.workMode;
+    }
+
     const jobs = await prismadb.job.findMany({
       where,
       include: {
         company: {
           select: {
             name: true,
-            logo: true
-          }
-        }
+            logo: true,
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: "desc",
+      },
     });
+    let filteredJobs = jobs;
+    // Case-insensitive location filter, matching starting letters
+    if (searchParams.location) {
+      const loc = searchParams.location.toLowerCase();
+      filteredJobs = filteredJobs.filter((job) =>
+        job.location.some((l) => l.toLowerCase().startsWith(loc))
+      );
+    }
 
-    return jobs;
+    return filteredJobs;
   } catch (error) {
     console.error("Error fetching jobs:", error);
     throw new Error("Failed to fetch jobs");
   }
-} 
+}

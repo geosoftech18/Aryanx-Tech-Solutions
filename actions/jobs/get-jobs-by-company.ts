@@ -2,7 +2,7 @@
 
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 import prisma from "@/lib/prismaDB";
-import { Job, JobType, JobCategory, Role } from "@prisma/client";
+import { Job, Role } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 interface GetJobsByCompanyResponse {

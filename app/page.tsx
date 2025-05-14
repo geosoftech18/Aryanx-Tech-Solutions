@@ -80,12 +80,6 @@ export default async function HomePage() {
               />
             ))}
           </div>
-
-          <div className="text-center mt-10">
-            <Link href="/categories">
-              <Button variant="outline">View All Categories</Button>
-            </Link>
-          </div>
         </div>
       </section>
 

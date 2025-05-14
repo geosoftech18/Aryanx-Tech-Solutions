@@ -1,4 +1,4 @@
-import { ApplicationStatus, Industry, JobType, Role, Sector, UserStatus } from "@prisma/client"
+import { ApplicationStatus, EmploymentType, Industry, Role, Sector, UserStatus, WorkMode } from "@prisma/client"
 import { z } from "zod"
 
 // Generic pagination and sorting schema 
@@ -20,7 +20,8 @@ export const listUsersFiltersSchema = paginationSchema.extend({
 export const listJobsFiltersSchema = paginationSchema.extend({
   search: z.string().optional(),
   status: z.enum(["active", "inactive"]).optional(),
-  type: z.nativeEnum(JobType).optional(),
+  type: z.nativeEnum(EmploymentType).optional(),
+  workMode: z.nativeEnum(WorkMode).optional(),
   companyId: z.string().optional(),
 })
 

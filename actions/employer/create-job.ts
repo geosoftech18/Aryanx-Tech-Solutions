@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { NEXT_AUTH_CONFIG } from "@/lib/auth";
 import prisma from "@/lib/prismaDB";
-import { JobType, JobCategory, Prisma } from "@prisma/client";
+import { EmploymentType, WorkMode, JobCategory, Prisma } from "@prisma/client";
 
 export async function createJob(data: Prisma.JobCreateInput) {
   console.log(data, "data");

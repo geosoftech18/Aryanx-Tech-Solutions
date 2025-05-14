@@ -3,7 +3,7 @@
 import prismadb from "@/lib/prismaDB"
 import { getServerSession } from "next-auth"
 import { listJobsFiltersSchema, ListJobsFilters } from "../utils/parse-filters"
-import { Job, Prisma, JobType, Role, Application, Company } from "@prisma/client"
+import { Job, Prisma, EmploymentType,WorkMode, Role, Application, Company } from "@prisma/client"
 import { NEXT_AUTH_CONFIG } from "@/lib/auth"
 
 /**
@@ -27,7 +27,7 @@ export async function listJobs(filters: ListJobsFilters): Promise<(Job & { appli
     if (status === "inactive") where.isActive = false // adjust as per your schema
     // Add more status logic if needed
   }
-  if (type) where.type = type as JobType
+  if (type) where.type = type as EmploymentType
   if (companyId) where.companyId = companyId
 
   let orderBy: Prisma.JobOrderByWithRelationInput;
