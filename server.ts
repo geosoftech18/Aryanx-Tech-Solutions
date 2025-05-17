@@ -7,19 +7,16 @@
  * 3. Initializes Socket.IO for real-time communication
  * 4. Manages WebSocket connections and rooms
  */
-
+import dotenv from 'dotenv';
+dotenv.config();
 import { createServer } from 'node:http';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import next from 'next';
 import { SocketIOService } from './lib/socket-server.js';
 import { parse } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = process.env.HOST || 'localhost';
+// console.log('hostname', process.env.HOST);
 const port = 3000;
 
 // Initialize Next.js instance with configuration
