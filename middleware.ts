@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/"];
 const AUTH_PATHS = ["/auth/login", "/auth/signup", "/auth/error"];
-const PROTECTED_PATHS = ["/ADMIN", "/EMPLOYER", "/CANDIDATE"];
+const PROTECTED_PATHS = ["/admin", "/employer", "/candidate"];
 
 export const config = {
   matcher: [
@@ -32,13 +32,13 @@ export async function middleware(req: NextRequest) {
       let destination = "/";
       switch (token.role) {
         case "ADMIN":
-          destination = "/ADMIN";
+          destination = "/admin";
           break;
         case "EMPLOYER":
-          destination = "/EMPLOYER";
+          destination = "/employer";
           break;
         case "CANDIDATE":
-          destination = "/CANDIDATE";
+          destination = "/candidate";
           break;
       }
       return NextResponse.redirect(new URL(destination, req.url));
