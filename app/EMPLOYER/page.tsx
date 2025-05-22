@@ -31,6 +31,7 @@ const EmployerPage = async () => {
     );
   } else {
     return <EmployerDashboard />;
+    
   }
 };
 

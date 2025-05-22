@@ -14,6 +14,7 @@ export default function DashboardLayout({
 }) {
   return (
       <SidebarProvider>
+        
         {/* <div className="flex min-h-screen bg-gray-50"> */}
         <DashboardSidebar />
         <SidebarInset>
