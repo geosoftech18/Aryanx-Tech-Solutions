@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
           <nav className="hidden md:flex space-x-8">
             {session && session.user.role && (
               <Link
-                href={`/${session?.user.role}`}
+                href={`/${session?.user.role.toLocaleLowerCase()}`}
                 className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
                 Dashboard
