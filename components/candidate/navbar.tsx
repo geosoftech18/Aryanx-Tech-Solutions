@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Menu,  X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -33,6 +33,12 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
+            <Link
+              href="/"
+              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+            >
+              Home
+            </Link>
             {session && session.user.role && (
               <Link
                 href={`/${session?.user.role.toLocaleLowerCase()}`}
@@ -41,12 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
                 Dashboard
               </Link>
             )}
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
-            >
-              Home
-            </Link>
+
             <Link
               href="/about-us"
               className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
@@ -70,6 +71,12 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
               className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
             >
               Why Choose Us
+            </Link>
+            <Link
+              href="/trainning-hub"
+              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+            >
+              Trainning Hub
             </Link>
           </nav>
 
