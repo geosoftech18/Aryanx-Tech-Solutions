@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, X } from "lucide-react";
+import { Menu,  X } from "lucide-react";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface NavbarProps {
   session: Session | null;
@@ -24,7 +25,9 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <h1 className="text-xl font-bold text-blue-600">JobSphere</h1>
+              <h1 className="text-xl font-bold text-blue-600">
+                AryanXTech Solutions
+              </h1>
             </Link>
           </div>
 
@@ -39,7 +42,13 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
               </Link>
             )}
             <Link
-              href="/about"
+              href="/"
+              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+            >
+              Home
+            </Link>
+            <Link
+              href="/about-us"
               className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
             >
               About Us
@@ -50,14 +59,22 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
             >
               Contact
             </Link>
+            <Link
+              href="/ats-capabilities"
+              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+            >
+              ATS Capabilities
+            </Link>
+            <Link
+              href="/why-choose-us"
+              className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+            >
+              Why Choose Us
+            </Link>
           </nav>
 
           {/* Right Side Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Search className="h-4 w-4" />
-              <span>Search</span>
-            </Button>
             {session ? (
               // if session exists, then show the logout button
               <>
@@ -70,6 +87,11 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
                 >
                   Log Out
                 </Button>
+                <Avatar>
+                  <AvatarFallback>
+                    {session.user.name?.slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
               </>
             ) : (
               // if session does not exist, then show the login signup buttons

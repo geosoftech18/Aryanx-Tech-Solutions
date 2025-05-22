@@ -9,6 +9,7 @@ import { CandidateType, EmploymentType, JobCategory } from "@prisma/client";
 import { format } from "date-fns";
 import { Briefcase, Calendar, DollarSign, MapPin } from "lucide-react";
 import { getServerSession } from "next-auth";
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 
 interface PageProps {
@@ -62,10 +63,12 @@ export default async function JobDetailsPage({ params }: PageProps) {
                       {jobDetails.company.name}
                     </span>
                     {jobDetails.company.logo && (
-                      <img
+                      <Image
                         src={jobDetails.company.logo}
                         alt={jobDetails.company.name}
                         className="w-8 h-8 rounded-full"
+                        width={32}
+                        height={32}
                       />
                     )}
                   </div>

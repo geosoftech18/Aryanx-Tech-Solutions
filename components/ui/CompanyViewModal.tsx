@@ -1,4 +1,5 @@
 import { Modal } from "./modal";
+import Image from "next/image";
 
 interface CompanyViewModalProps {
   company: any;
@@ -18,7 +19,7 @@ function CompanyViewModal({ company, open, onClose }: CompanyViewModalProps) {
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-4">
           {company.logo && (
-            <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-full object-cover" />
+            <Image src={company.logo} alt={company.name} className="w-16 h-16 rounded-full object-cover" width={64} height={64} />
           )}
           <div>
             <div className="font-semibold text-lg">{company.name}</div>

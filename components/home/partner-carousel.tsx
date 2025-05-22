@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 // Sample partner logos
 const partners = [
@@ -209,7 +210,9 @@ export default function PartnersCarousel() {
                     },
                   }}
                 >
-                  <img
+                  <Image
+                    width={120}
+                    height={80}
                     src={partner.logo || "/placeholder.svg"}
                     alt={`${partner.name} logo`}
                     className="max-w-full max-h-full object-contain"

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ArrowUp, BadgePercent, Star } from "lucide-react";
+import Image from "next/image";
 
 // Placeholder avatars
 const avatars = [
@@ -42,7 +43,7 @@ export default function AboutShowcase() {
               {/* Avatars row */}
               <div className="flex items-center gap-1 mt-2 mb-4">
                 {avatars.map((url, i) => (
-                  <img
+                  <Image
                     key={url}
                     src={url}
                     alt={`User avatar ${i + 1}`}
@@ -51,6 +52,8 @@ export default function AboutShowcase() {
                       zIndex: avatars.length - i,
                       boxShadow: "0 0 0 2px #fff",
                     }}
+                    width={32}
+                    height={32}
                   />
                 ))}
                 <span className="ml-2 text-xs text-muted-foreground">

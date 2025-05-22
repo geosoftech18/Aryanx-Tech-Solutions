@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { NotificationDropdown } from "@/components/ui/notification-dropdown";
+// import { NotificationDropdown } from "@/components/ui/notification-dropdown";
 import { Progress } from "@/components/ui/progress";
 import {
   Tooltip,
@@ -83,9 +83,9 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
     <div className="container mx-auto py-8 px-4 bg-gradient-to-b from-background to-background/80">
       {/* Header with notifications and settings */}
       <div className="flex justify-end mb-6 gap-2">
-        {session?.user?.id && (
+        {/* {session?.user?.id && (
           <NotificationDropdown userId={session.user.id} userRole="CANDIDATE" />
-        )}
+        )} */}
 
         <TooltipProvider>
           <Tooltip>

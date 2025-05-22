@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Star, User } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 const testimonials = [
@@ -147,10 +148,12 @@ export default function TestimonialCarousel() {
                     <CardContent className="p-8 flex flex-col items-center text-center h-full">
                       <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center mb-5 overflow-hidden shadow-md">
                         {testimonial.avatar ? (
-                          <img
+                          <Image
                             src={testimonial.avatar}
                             alt={testimonial.name}
                             className="object-cover w-16 h-16 rounded-full"
+                            width={64}
+                            height={64}
                           />
                         ) : (
                           <User className="h-8 w-8 text-blue-600 dark:text-blue-400" />

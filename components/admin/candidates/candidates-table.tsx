@@ -86,7 +86,7 @@ export function CandidatesTable() {
         setError("Failed to load candidates");
         setLoading(false);
       });
-  }, [debouncedSearch, filters.page, filters.pageSize, filters.sortBy, filters.sortOrder]);
+  }, [debouncedSearch, filters.page, filters.pageSize, filters.sortBy, filters.sortOrder,filters.search,filters]);
 
   // Handle sorting
   useEffect(() => {

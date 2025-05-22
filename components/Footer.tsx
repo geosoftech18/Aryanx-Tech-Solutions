@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { Briefcase, Facebook, Instagram, Linkedin, Twitter } from "lucide-react"
 
 export default function Footer() {
@@ -8,27 +7,27 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Logo and Description */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
+            <span className="flex items-center space-x-2 mb-4">
               <Briefcase className="h-8 w-8 text-blue-500" />
               <span className="text-xl font-bold text-white">JobSphere</span>
-            </Link>
+            </span>
             <p className="text-gray-400 mb-4">
               JobSphere connects talented professionals with top employers. Find your dream job or the perfect candidate
               with our comprehensive job board platform.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+              <span className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
                 <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
+              </span>
+              <span className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
                 <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
+              </span>
+              <span className="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+              </span>
+              <span className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
-              </a>
+              </span>
             </div>
           </div>
 
@@ -37,29 +36,29 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">For Job Seekers</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/jobs" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Browse Jobs
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/jobs/saved" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Saved Jobs
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/jobs/alerts" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Job Alerts
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/resources/career-advice" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Career Advice
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/resources/resume-tips" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Resume Tips
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -69,24 +68,24 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">For Employers</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/employers/post-job" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Post a Job
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/employers/pricing" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Pricing
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/employers/resources" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Resources
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/employers/dashboard" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Employer Dashboard
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -96,24 +95,24 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   About Us
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Contact
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Privacy Policy
-                </Link>
+                </span>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                <span className="text-gray-400 hover:text-white transition-colors">
                   Terms of Service
-                </Link>
+                </span>
               </li>
             </ul>
           </div>
@@ -125,19 +124,19 @@ export default function Footer() {
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-4">
                 <li>
-                  <Link href="/privacy" className="hover:text-white transition-colors">
+                  <span className="hover:text-white transition-colors">
                     Privacy
-                  </Link>
+                  </span>
                 </li>
                 <li>
-                  <Link href="/terms" className="hover:text-white transition-colors">
+                  <span className="hover:text-white transition-colors">
                     Terms
-                  </Link>
+                  </span>
                 </li>
                 <li>
-                  <Link href="/cookies" className="hover:text-white transition-colors">
+                  <span className="hover:text-white transition-colors">
                     Cookies
-                  </Link>
+                  </span>
                 </li>
               </ul>
             </div>
