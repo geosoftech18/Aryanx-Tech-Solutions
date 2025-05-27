@@ -319,7 +319,7 @@ model HomepageFeatureSlide {
   buttonLink  String
   image       String
   color       String
-  homepage    Homepage? @relation(fields: [homepageId], references: [id])
+  homepage    Homepage? @relation(fields: [homepageId], references: [id], onDelete: Cascade)
   homepageId  String?   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -330,7 +330,7 @@ model Partner {
   name      String
   logoUrl   String
   website   String?
-  homepage  Homepage? @relation(fields: [homepageId], references: [id])
+  homepage  Homepage? @relation(fields: [homepageId], references: [id], onDelete: Cascade)
   homepageId String?   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -340,7 +340,7 @@ model HomepageStat {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   percentage  Int
   description String
-  homepage    Homepage? @relation(fields: [homepageId], references: [id])
+  homepage    Homepage? @relation(fields: [homepageId], references: [id], onDelete: Cascade)
   homepageId  String?   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -351,7 +351,7 @@ model HomepageStep {
   icon        String   
   title       String
   description String
-  homepage    Homepage? @relation(fields: [homepageId], references: [id])
+  homepage    Homepage? @relation(fields: [homepageId], references: [id], onDelete: Cascade)
   homepageId  String?   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -365,7 +365,7 @@ model HomepageCta {
   button1Link  String
   button2Text  String
   button2Link  String
-  homepage    Homepage? @relation(fields: [homepageId], references: [id])
+  homepage    Homepage? @relation(fields: [homepageId], references: [id], onDelete: Cascade)
   homepageId  String?   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

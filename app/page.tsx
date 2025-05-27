@@ -1,4 +1,4 @@
-import { fetchHomepage, HomepageData } from "@/actions/static/fetch-homepage";
+import { fetchHomepage, HomepageData } from "@/actions/static/homepage";
 import BusinessImpactSection from "@/components/home/business-impact";
 import FeatureSlider from "@/components/home/feature-slider";
 import PartnersCarousel from "@/components/home/partner-carousel";
@@ -25,11 +25,10 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-blue-600">
-              Find Your Dream Job Today
+              {homepage?.searchTitle}
             </h1>
             <p className="text-xl mb-8 text-gray-600">
-              Connect with thousands of employers and take the next step in your
-              career.
+              {homepage?.searchSubtitle}
             </p>
 
             <SearchBar />

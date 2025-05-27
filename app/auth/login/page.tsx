@@ -115,7 +115,7 @@ const Login = () => {
         email,
         otp,
         role: role,
-        callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/${role}`,
+        callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/${role.toLowerCase()}`,
       });
 
       if (res?.error) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChart3, Briefcase, Building2, FileText, LayoutDashboard, LogOut, Users } from "lucide-react"
+import { BarChart3, BookOpen, Briefcase, Building2, FileText, LayoutDashboard, LogOut, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -38,12 +38,12 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN")}
+              isActive={isActive("/admin")}
               className={
-                isActive("/ADMIN") ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"
+                isActive("/admin") ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN">
+              <Link href="/admin">
                 <LayoutDashboard className="h-4 w-4" />
                 <span>Dashboard</span>
               </Link>
@@ -53,12 +53,12 @@ export function DashboardSidebar() {
            <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/users")}
+              isActive={isActive("/admin/users")}
               className={
-                isActive("/ADMIN/users") ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"
+                isActive("/admin/users") ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/users">
+              <Link href="/admin/users">
                 <Users className="h-4 w-4" />
                 <span>Users</span>
               </Link>
@@ -68,14 +68,14 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/companies")}
+              isActive={isActive("/admin/companies")}
               className={
-                isActive("/ADMIN/companies")
+                isActive("/admin/companies")
                   ? "bg-blue-50 text-blue-700 font-medium"
                   : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/companies">
+              <Link href="/admin/companies">
                 <Building2 className="h-4 w-4" />
                 <span>Companies</span>
               </Link>
@@ -85,14 +85,14 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/candidates")}
+              isActive={isActive("/admin/candidates")}
               className={
-                isActive("/ADMIN/candidates")
+                isActive("/admin/candidates")
                   ? "bg-blue-50 text-blue-700 font-medium"
                   : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/candidates">
+              <Link href="/admin/candidates">
                 <Users className="h-4 w-4" />
                 <span>Candidates</span>
               </Link>
@@ -102,12 +102,12 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/jobs")}
+              isActive={isActive("/admin/jobs")}
               className={
-                isActive("/ADMIN/jobs") ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"
+                isActive("/admin/jobs") ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/jobs">
+              <Link href="/admin/jobs">
                 <Briefcase className="h-4 w-4" />
                 <span>Jobs</span>
               </Link>
@@ -117,16 +117,34 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/applications")}
+              isActive={isActive("/admin/applications")}
               className={
-                isActive("/ADMIN/applications")
+                isActive("/admin/applications")
                   ? "bg-blue-50 text-blue-700 font-medium"
                   : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/applications">
+              <Link href="/admin/applications">
                 <FileText className="h-4 w-4" />
                 <span>Applications</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {/* CMS */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/admin/cms")}
+              className={
+                isActive("/admin/cms")
+                  ? "bg-blue-50 text-blue-700 font-medium"
+                  : "text-gray-700 hover:bg-gray-50"
+              }
+            >
+              <Link href="/admin/cms">
+                <BookOpen className="h-4 w-4" />
+                <span>CMS</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -135,14 +153,14 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/analytics")}
+              isActive={isActive("/admin/analytics")}
               className={
-                isActive("/ADMIN/analytics")
+                isActive("/admin/analytics")
                   ? "bg-blue-50 text-blue-700 font-medium"
                   : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/analytics">
+              <Link href="/admin/analytics">
                 <BarChart3 className="h-4 w-4" />
                 <span>Analytics</span>
               </Link>
@@ -152,14 +170,14 @@ export function DashboardSidebar() {
           {/* <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/ADMIN/settings")}
+              isActive={isActive("/admin/settings")}
               className={
-                isActive("/ADMIN/settings")
+                isActive("/admin/settings")
                   ? "bg-blue-50 text-blue-700 font-medium"
                   : "text-gray-700 hover:bg-gray-50"
               }
             >
-              <Link href="/ADMIN/settings">
+              <Link href="/admin/settings">
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
               </Link>
