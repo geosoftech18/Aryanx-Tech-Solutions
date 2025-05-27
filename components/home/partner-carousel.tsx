@@ -5,50 +5,51 @@ import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import { Partner } from "@prisma/client"
 
 // Sample partner logos
-const partners = [
-  {
-    id: 1,
-    name: "TechCorp",
-    logo: "/accenture.png",
-  },
-  {
-    id: 2,
-    name: "InnovateTech",
-    logo: "/accenture.png",
-  },
-  {
-    id: 3,
-    name: "CloudSolutions",
-    logo: "/accenture.png",
-  },
-  {
-    id: 4,
-    name: "DesignHub",
-    logo: "/accenture.png",
-  },
-  {
-    id: 5,
-    name: "DataInsights",
-    logo: "/accenture.png",
-  },
-  {
-    id: 6,
-    name: "GrowthMarketing",
-    logo: "/accenture.png",
-  },
-  {
-    id: 7,
-    name: "SecureTech",
-    logo: "/accenture.png",
-  },
-  {
-    id: 8,
-    name: "GlobalConnect",
-    logo: "/accenture.png",
-  },
-]
+// const partners = [
+//   {
+//     id: 1,
+//     name: "TechCorp",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 2,
+//     name: "InnovateTech",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 3,
+//     name: "CloudSolutions",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 4,
+//     name: "DesignHub",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 5,
+//     name: "DataInsights",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 6,
+//     name: "GrowthMarketing",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 7,
+//     name: "SecureTech",
+//     logo: "/accenture.png",
+//   },
+//   {
+//     id: 8,
+//     name: "GlobalConnect",
+//     logo: "/accenture.png",
+//   },
+// ]
 
 // Dot animation variants
 const dotVariants = {
@@ -64,7 +65,7 @@ const dotVariants = {
   },
 }
 
-export default function PartnersCarousel() {
+export default function PartnersCarousel({ partners, title, subtitle }: { partners: Partner[], title: string, subtitle: string }) {
   const [currentPage, setCurrentPage] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(6)
   const [autoPlay, setAutoPlay] = useState(true)
@@ -167,9 +168,9 @@ export default function PartnersCarousel() {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-4">Our Partners</h2>
+          <h2 className="text-3xl font-bold mb-4">{title}</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            We collaborate with leading companies across various industries to bring you the best job opportunities.
+            {subtitle}
           </p>
         </div>
 
@@ -213,7 +214,7 @@ export default function PartnersCarousel() {
                   <Image
                     width={120}
                     height={80}
-                    src={partner.logo || "/placeholder.svg"}
+                    src={partner.logoUrl || "/placeholder.svg"}
                     alt={`${partner.name} logo`}
                     className="max-w-full max-h-full object-contain"
                     onError={(e) => {

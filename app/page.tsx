@@ -1,5 +1,4 @@
-import { getFeaturedJobs } from "@/actions/jobs/get-featured-jobs";
-import { getJobCategoriesWithCounts } from "@/actions/jobs/get-job-categories";
+import { fetchHomepage, HomepageData } from "@/actions/static/fetch-homepage";
 import BusinessImpactSection from "@/components/home/business-impact";
 import FeatureSlider from "@/components/home/feature-slider";
 import PartnersCarousel from "@/components/home/partner-carousel";
@@ -15,15 +14,13 @@ import {
 import Link from "next/link";
 
 export default async function HomePage() {
-  const [featuredJobs, jobCategories] = await Promise.all([
-    getFeaturedJobs(),
-    getJobCategoriesWithCounts()
-  ]);
+  const { homepage, featuredJobs, jobCategories }:HomepageData = await fetchHomepage()
+
 
   return (
     <div>
       {/* Hero Section */}
-      <FeatureSlider />
+      <FeatureSlider slides={homepage?.featureSlides || []} />
       <section className="bg-gray-200 py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
@@ -60,10 +57,9 @@ export default async function HomePage() {
       <section className="py-16 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Browse by Category</h2>
+            <h2 className="text-3xl font-bold mb-4">{homepage?.categoryTitle}</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              Explore opportunities across various industries and find your
-              perfect role in a field you&apos;re passionate about.
+              {homepage?.categorySubtitle}
             </p>
           </div>
 
@@ -103,16 +99,16 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      <PartnersCarousel />
-      <BusinessImpactSection />
+      <PartnersCarousel partners={homepage?.partner || []} title={homepage?.partnerTitle || ""} subtitle={homepage?.partnerSubtitle || ""} />
+      <BusinessImpactSection stats={homepage?.stats || []} title={homepage?.statsTitle || ""} subtitle={homepage?.statsSubtitle || ""} />
 
       {/* How It Works Section */}
       <section className="py-16 bg-slate-50 px-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">How JobSphere Works</h2>
+            <h2 className="text-3xl font-bold mb-4">{homepage?.stepsTitle}</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              Your journey to the perfect job is just a few steps away.
+              {homepage?.stepsSubtitle}
             </p>
           </div>
 
@@ -121,9 +117,9 @@ export default async function HomePage() {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Create an Account</h3>
+              <h3 className="text-xl font-semibold mb-3">{homepage?.steps[0].title}</h3>
               <p className="text-slate-600">
-                Sign up and create your profile with your experience, skills, and resume.
+                {homepage?.steps[0].description}
               </p>
             </div>
 
@@ -131,9 +127,9 @@ export default async function HomePage() {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Find Matching Jobs</h3>
+              <h3 className="text-xl font-semibold mb-3">{homepage?.steps[1].title}</h3>
               <p className="text-slate-600">
-                Search for jobs that match your skills and preferences, or receive personalized recommendations.
+                {homepage?.steps[1].description}
               </p>
             </div>
 
@@ -141,17 +137,11 @@ export default async function HomePage() {
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Apply and Get Hired</h3>
+              <h3 className="text-xl font-semibold mb-3">{homepage?.steps[2].title}</h3>
               <p className="text-slate-600">
-                Submit your application with just a few clicks and track your application status.
+                {homepage?.steps[2].description}
               </p>
             </div>
-          </div>
-
-          <div className="text-center mt-10">
-            <Link href="/auth/register">
-              <Button size="lg">Get Started Today</Button>
-            </Link>
           </div>
         </div>
       </section>
@@ -161,29 +151,28 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-6">
-              Ready to Find Your Dream Job?
+              {homepage?.cta[0].title}
             </h2>
             <p className="text-xl mb-8">
-              Create your account today and start exploring thousands of
-              opportunities.
+              {homepage?.cta[0].subtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/signup">
+              <Link href={homepage?.cta[0].button1Link || ""}>
                 <Button
                   variant="default"
                   size="lg"
                   className="bg-white text-indigo-600 hover:bg-gray-100"
                 >
-                  Sign Up as a Candidate
+                  {homepage?.cta[0].button1Text}
                 </Button>
               </Link>
-              <Link href="/auth/signup">
+              <Link href={homepage?.cta[0].button2Link || ""}>
                 <Button
                   variant="outline"
                   size="lg"
                   className="border-white text-indigo-600 hover:text-white hover:bg-white/10"
                 >
-                  For Employers
+                  {homepage?.cta[0].button2Text}
                 </Button>
               </Link>
             </div>

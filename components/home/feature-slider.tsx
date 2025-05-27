@@ -5,65 +5,20 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+import { HomepageFeatureSlide } from "@prisma/client"
 
-interface SlideContent {
-  id: number
-  heading: string
-  subheading: string
-  description: string
-  buttonText: string
-  buttonLink: string
-  image: string
-  color: string
-}
 
-const slides: SlideContent[] = [
-  {
-    id: 1,
-    heading: "Find Your Dream Job",
-    subheading: "Thousands of opportunities await",
-    description:
-      "Connect with top employers and discover roles that match your skills and aspirations. Our intelligent matching system helps you find the perfect fit.",
-    buttonText: "Search Jobs",
-    buttonLink: "/jobs",
-    image: "/slider-job-search.png",
-    color: "from-blue-600 to-indigo-700",
-  },
-  {
-    id: 2,
-    heading: "Build Your Career Profile",
-    subheading: "Stand out to employers",
-    description:
-      "Create a comprehensive profile that showcases your skills, experience, and achievements. Get noticed by companies looking for talent like you.",
-    buttonText: "Create Profile",
-    buttonLink: "/profile/create",
-    image: "/slider-career-profile.png",
-    color: "from-purple-600 to-pink-600",
-  },
-  {
-    id: 3,
-    heading: "Remote Opportunities",
-    subheading: "Work from anywhere",
-    description:
-      "Explore thousands of remote positions that offer flexibility and work-life balance. Find roles that let you work from the comfort of your home.",
-    buttonText: "View Remote Jobs",
-    buttonLink: "/jobs?type=remote",
-    image: "/slider-remote-work.png",
-    color: "from-emerald-600 to-teal-700",
-  },
-]
-
-export default function FeatureSlider() {
+export default function FeatureSlider({ slides }: { slides: HomepageFeatureSlide[] }) {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
-  }, [])
+  }, [slides.length])
 
   const prevSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
-  }, [])
+  }, [slides.length])
 
   // Auto-advance slides
   useEffect(() => {

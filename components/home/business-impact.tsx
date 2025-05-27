@@ -1,9 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { HomepageStat } from "@prisma/client"
 import { motion, useInView } from "framer-motion"
-import { ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { useEffect, useRef, useState } from "react"
 
 interface StatProps {
   percentage: number
@@ -236,7 +235,26 @@ const AnimatedBackground = () => {
   )
 }
 
-export default function BusinessImpactSection() {
+export default function BusinessImpactSection({stats,title,subtitle}: {stats: HomepageStat[],title: string,subtitle: string}) {
+  // State to track if the component has mounted
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Set isMounted to true after the component mounts
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Optionally, you can show a loader or nothing until mounted
+  if (!isMounted) {
+    // You can replace this with a spinner or skeleton if desired
+    return null
+  }
+
+  const titlewords = title.split(" ")
+
+  const titlewithoutlastword = titlewords.filter((_, index) => index != titlewords.length - 1).join(" ")
+  const lastword = titlewords.filter((_, index) => index == titlewords.length - 1)[0]
+
   return (
     <section className="bg-blue-900 py-16 md:py-20 relative overflow-hidden">
       {/* Animated Background */}
@@ -247,39 +265,34 @@ export default function BusinessImpactSection() {
           {/* Left column with text */}
           <div className="lg:col-span-4">
             <h2 className="text-white text-3xl md:text-4xl font-bold mb-4">
-              We help businesses and the people in them
+              {titlewithoutlastword}
             </h2>
-            <div className="text-blue-300 text-6xl md:text-7xl font-bold mb-6">THRIVE</div>
+            <div className="text-blue-300 text-6xl md:text-7xl font-bold mb-6">
+              {lastword.toUpperCase()}
+            </div>
             <p className="text-white/80 mb-8">
-              Across the globe, the companies we partner with are driving business transformation through people.
+              {subtitle}
             </p>
-            <Link
+            {/* <Link
               href="/about/impact"
               className="inline-flex items-center text-blue-300 hover:text-white transition-colors group"
             >
               <span className="text-lg font-medium">Explore our business impact</span>
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
+            </Link> */}
           </div>
 
           {/* Right column with stats */}
           <div className="lg:col-span-8">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 lg:gap-6">
-              <CircularStat
-                percentage={96}
-                description="We work with 96% of Fortune's top 50 world's most admired companies"
-                delay={0}
-              />
-              <CircularStat
-                percentage={80}
-                description="We work with 80% of the Drucker Institute's top performing companies"
-                delay={0.2}
-              />
-              <CircularStat
-                percentage={75}
-                description="3 in every 4 of Fortune's best companies to work for are JobSphere clients"
-                delay={0.4}
-              />
+              {stats.map((stat) => (
+                <CircularStat
+                  key={stat.id}
+                  percentage={stat.percentage}
+                  description={stat.description}
+                  delay={0}
+                />
+              ))}
             </div>
           </div>
         </div>
