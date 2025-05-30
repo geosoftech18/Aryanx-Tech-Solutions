@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import {  Role } from "@prisma/client"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import HomepageFormWrapper from "./forms/homepage-form"
+import AboutUsFormWrapper from "./forms/aboutus-form-wrapper"
 
 export default function AdminCMSPage() {
   const { data: session } = useSession()
@@ -33,7 +34,7 @@ export default function AdminCMSPage() {
         </TabsContent>
         {/* About Us Tab */}
         <TabsContent value="aboutus">
-          <div className="bg-white rounded-lg p-6 shadow-sm">About Us content form (to be implemented)</div>
+          <AboutUsFormWrapper />
         </TabsContent>
         {/* Contact Tab */}
         <TabsContent value="contact">

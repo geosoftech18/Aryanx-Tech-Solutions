@@ -391,3 +391,99 @@ model Homepage{
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model AboutUsTeamMember {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  role        String
+  bio         String
+  image       String
+  email       String
+  linkedin    String?
+  twitter     String?
+  instagram   String?
+  website     String?
+  aboutUs     AboutUs? @relation(fields: [aboutUsId], references: [id], onDelete: Cascade)
+  aboutUsId   String?   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutUsSpecialization {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  aboutUs     AboutUs? @relation(fields: [aboutUsId], references: [id], onDelete: Cascade)
+  aboutUsId   String?   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutUsStat {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  value       Int
+  label       String
+  aboutUs     AboutUs? @relation(fields: [aboutUsId], references: [id], onDelete: Cascade)
+  aboutUsId   String?   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutUsTab {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  value       String
+  icon        String
+  title       String
+  description String
+  aboutUs     AboutUs? @relation(fields: [aboutUsId], references: [id], onDelete: Cascade)
+  aboutUsId   String?   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutUsWhyChooseUsCard {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  icon        String
+  aboutUs     AboutUs? @relation(fields: [aboutUsId], references: [id], onDelete: Cascade)
+  aboutUsId   String?   @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutUs {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  companyName       String
+  heroTitle         String
+  heroSubtitle      String
+  heroImage         String
+  missionTitle      String
+  missionText       String
+  approachTitle     String
+  approachText      String
+  promiseTitle      String
+  promiseText       String
+  storyTitle        String
+  storyText         String
+  teamTitle         String
+  teamSubtitle      String
+  visionTitle       String
+  visionText        String
+  missionSectionTitle String
+  missionSectionText  String
+  whyChooseUsTitle  String
+  whyChooseUsSubtitle String
+  deibTitle         String
+  deibSubtitle      String
+  ctaTitle          String
+  ctaSubtitle       String
+  ctaButton1Text    String
+  ctaButton2Text    String
+  teamMembers       AboutUsTeamMember[]
+  specializations   AboutUsSpecialization[]
+  stats             AboutUsStat[]
+  tabs              AboutUsTab[]
+  whyChooseUsCards  AboutUsWhyChooseUsCard[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

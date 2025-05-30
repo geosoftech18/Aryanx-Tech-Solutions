@@ -1,13 +1,12 @@
 "use client"
 import { useCountUp } from "@/hooks/use-count-up"
 
-
 interface AnimatedStatProps {
   value: number
   label: string
   duration?: number
   delay?: number
-  formatter?: (value: number) => string
+  isPercent?: boolean // If true, show value as percent
 }
 
 export function AnimatedStat({
@@ -15,13 +14,16 @@ export function AnimatedStat({
   label,
   duration = 2000,
   delay = 0,
-  formatter = (value) => Math.floor(value).toString(),
+  isPercent = false,
 }: AnimatedStatProps) {
+  // Use the isPercent flag to determine the formatter
   const { count, ref } = useCountUp({
     end: value,
     duration,
     delay,
-    formatter,
+    formatter: isPercent
+      ? (value) => `${Math.floor(value)}%`
+      : (value) => Math.floor(value).toString(),
   })
 
   return (

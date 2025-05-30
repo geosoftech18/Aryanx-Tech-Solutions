@@ -597,7 +597,6 @@ export default function ATSCapabilities() {
                   value={5000}
                   label="Successful Placements"
                   delay={0}
-                  formatter={(value) => `${Math.floor(value).toLocaleString()}+`}
                   duration={2500}
                 />
               </div>
@@ -606,7 +605,6 @@ export default function ATSCapabilities() {
                   value={200}
                   label="Partner Companies"
                   delay={300}
-                  formatter={(value) => `${Math.floor(value).toLocaleString()}+`}
                   duration={2500}
                 />
               </div>
@@ -615,7 +613,7 @@ export default function ATSCapabilities() {
                   value={98}
                   label="Client Satisfaction"
                   delay={600}
-                  formatter={(value) => `${Math.floor(value)}%`}
+                  isPercent
                   duration={2500}
                 />
               </div>
@@ -624,7 +622,6 @@ export default function ATSCapabilities() {
                   value={15}
                   label="Industries Served"
                   delay={900}
-                  formatter={(value) => `${Math.floor(value)}+`}
                   duration={2500}
                 />
               </div>
