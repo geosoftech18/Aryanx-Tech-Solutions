@@ -131,7 +131,7 @@ export default function ApplicationsPage() {
           <Card
             key={application.id}
             className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => router.push(`/EMPLOYER/applications/${application.id}`)}
+            onClick={() => router.push(`/employer/applications/${application.id}`)}
           >
             <CardHeader>
               <div className="flex justify-between items-start">

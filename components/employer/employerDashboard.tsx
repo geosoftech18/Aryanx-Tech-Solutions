@@ -18,6 +18,7 @@ import {
   PieChart,
   TrendingUp,
   Users,
+  Settings,
 } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
@@ -91,21 +92,21 @@ export default async function EmployerDashboard() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
-                href="/EMPLOYER/jobs"
+                href="/employer/jobs"
                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
               >
                 <Briefcase className="h-4 w-4" />
                 <span>Jobs</span>
               </Link>
               <Link
-                href="/EMPLOYER/applications"
+                href="/employer/applications"
                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
               >
                 <FileText className="h-4 w-4" />
                 <span>Applications</span>
               </Link>
               <Link
-                href="/EMPLOYER/company"
+                href="/employer/company"
                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
               >
                 <Building2 className="h-4 w-4" />
@@ -117,13 +118,13 @@ export default async function EmployerDashboard() {
                   userRole="EMPLOYER"
                 />
               )}
-              {/* <Link
-                href="/EMPLOYER/settings"
+              <Link
+                href="/employer/settings"
                 className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
               >
                 <Settings className="h-4 w-4" />
                 <span>Settings</span>
-              </Link> */}
+              </Link>
             </div>
           </div>
         </div>

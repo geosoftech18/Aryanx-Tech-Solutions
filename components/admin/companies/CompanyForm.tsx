@@ -105,7 +105,7 @@ export default function CompanyForm({
         const res = await updateCompany(companyId, values);
         if (res) {
           toast.success("Company updated successfully");
-          router.push("/ADMIN/companies");
+          router.push("/admin/companies");
         } else {
           toast.error("Failed to update company");
         }
@@ -114,7 +114,7 @@ export default function CompanyForm({
         const res = await createCompanyAdmin(values);
         if (res) {
           toast.success("Company created successfully");
-          router.push("/ADMIN/companies");
+          router.push("/admin/companies");
         } else {
           toast.error("Failed to create company");
         }

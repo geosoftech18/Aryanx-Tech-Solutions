@@ -139,7 +139,7 @@ export function ApplicationsTableCellActions({
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link
-              href={`/ADMIN/applications/${fullApplication.id}`}
+              href={`/admin/applications/${fullApplication.id}`}
               className="cursor-pointer flex items-center"
             >
               <Pencil className="mr-2 h-4 w-4" />

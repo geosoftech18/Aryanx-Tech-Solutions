@@ -52,7 +52,7 @@ const JobApplyBox = ({ company, jobId, candidateType, jobFor }: Props) => {
       }
 
       toast.success('Application submitted successfully!');
-      router.push('/CANDIDATE');
+      router.push('/candidate');
     } catch (error) {
       console.error('Error submitting application:', error);
       toast.error('Failed to submit application. Please try again.');

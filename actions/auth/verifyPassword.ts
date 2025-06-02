@@ -26,13 +26,20 @@ export async function verifyPassword(email: string, password: string): Promise<{
     // Find user by email (only select password field)
     const user = await prismadb.user.findUnique({
       where: { email },
-      select: { password: true },
+      select: { password: true, accountSource: true },
     });
 
-    if (!user) {
+    if (!user ) {
       return {
         success: false,
         message: "User not found.",
+      };
+    }
+
+    if (user.accountSource === "LINKEDIN") {
+      return {
+        success: false,
+        message: "This account is sourced from LinkedIn. Please use login with LinkedIn.",
       };
     }
 

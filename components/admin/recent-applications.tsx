@@ -74,7 +74,7 @@ export async function RecentApplications() {
             </div>
           ))}
         </div>
-        <Link href="/ADMIN/applications" className="cursor-pointer">
+        <Link href="/admin/applications" className="cursor-pointer">
           <Button
             variant="outline"
             className="mt-4 w-full border-gray-200 text-gray-700 hover:bg-gray-50 cursor-pointer"

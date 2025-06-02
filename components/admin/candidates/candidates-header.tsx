@@ -23,7 +23,7 @@ export function CandidatesHeader({ search, onSearch }: CandidatesHeaderProps) {
             onChange={(e) => onSearch(e.target.value)}
           />
         </div>
-        <Link href="/ADMIN/candidates/create" className="cursor-pointer">
+        <Link href="/admin/candidates/create" className="cursor-pointer">
           <Button className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4 cursor-pointer" />
             Add Candidate

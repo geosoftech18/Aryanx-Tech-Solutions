@@ -24,7 +24,7 @@ export function JobsHeader({ search, onSearch }: JobsHeaderProps) {
             onChange={(e) => onSearch(e.target.value)}
           />
         </div>
-        <Link href="/ADMIN/jobs/create" className="cursor-pointer">
+        <Link href="/admin/jobs/create" className="cursor-pointer">
           <Button className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4 cursor-pointer" />
             Add Job

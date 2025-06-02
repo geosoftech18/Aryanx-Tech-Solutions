@@ -176,7 +176,7 @@ export async function updateCandidateProfile(
       }
     }
 
-    revalidatePath("/CANDIDATE/profile");
+    revalidatePath("/candidate/profile");
     revalidatePath("/dashboard");
 
     return {

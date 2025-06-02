@@ -172,7 +172,7 @@ const Login = () => {
                     Password
                   </Label>
                   <Link
-                    href="/forgot-password"
+                    href="/auth/forgot-password"
                     className="text-sm font-medium text-blue-600 hover:text-blue-500"
                   >
                     Forgotten?
@@ -269,8 +269,8 @@ const Login = () => {
             <div className="mt-6 space-y-4">
               <LinkedInSignInDropdown
                 buttonLabel="Sign in with LinkedIn"
-                candidateCallbackUrl="/CANDIDATE"
-                employerCallbackUrl="/EMPLOYER"
+                candidateCallbackUrl="/candidate"
+                employerCallbackUrl="/employer"
               />
             </div>
 

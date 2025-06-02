@@ -56,7 +56,7 @@ export function ApplicationsHeader({
           </SelectContent>
         </Select>
       </div>
-      <Link href="/ADMIN/applications/create" className="cursor-pointer">
+      <Link href="/admin/applications/create" className="cursor-pointer">
         <Button className="cursor-pointer">
           <Plus className="mr-2 h-4 w-4 cursor-pointer" />
           Add Application

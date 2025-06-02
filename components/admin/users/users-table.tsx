@@ -113,7 +113,7 @@ export function UsersTable() {
               View User
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Link href={`/ADMIN/users/${user.id}`} className="flex items-center">
+              <Link href={`/admin/users/${user.id}`} className="flex items-center">
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit User
               </Link>

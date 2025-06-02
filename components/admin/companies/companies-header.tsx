@@ -23,7 +23,7 @@ export function CompaniesHeader({ search, onSearch }: CompaniesHeaderProps) {
             onChange={e => onSearch(e.target.value)}
           />
         </div>
-        <Link href="/ADMIN/companies/create" className="cursor-pointer">
+        <Link href="/admin/companies/create" className="cursor-pointer">
           <Button className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4 cursor-pointer" />
             Add Company

@@ -29,10 +29,16 @@ model User {
   notifications Notification[]
 
   otp           String?
+
+  accountSource AccountSource @default(CREDENTIAL)
   // New fields for email verification
   emailVerified Boolean   @default(false)
   verifyToken   String?   
   verifyExpires DateTime?
+
+  // Password reset fields
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
 
   status UserStatus @default(PENDING)
 
@@ -307,8 +313,12 @@ enum NotificationType {
   NEW_APPLICATION_RECEIVED
 }
 
+enum AccountSource {
+  CREDENTIAL
+  LINKEDIN
+}
 
-// Static Data
+// Static Data - Homepage
 
 model HomepageFeatureSlide {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -392,6 +402,7 @@ model Homepage{
   updatedAt   DateTime @updatedAt
 }
 
+// About Us
 model AboutUsTeamMember {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String

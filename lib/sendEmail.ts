@@ -57,4 +57,14 @@ const SendEmail = async ({
   }
 };
 
+// Helper to get the base server URL (for password reset links)
+export async function getServerUrl(): Promise<string> {
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  if (process.env.VERCEL_URL) {
+    if (process.env.VERCEL_URL.startsWith("http")) return process.env.VERCEL_URL;
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000";
+}
+
 export default SendEmail

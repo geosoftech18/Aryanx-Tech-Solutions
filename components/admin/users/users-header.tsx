@@ -76,7 +76,7 @@ export function UsersHeader({
             </SelectItem>
           </SelectContent>
         </Select>
-        <Link href="/ADMIN/users/create" className="cursor-pointer">
+        <Link href="/admin/users/create" className="cursor-pointer">
           <Button className="cursor-pointer">
             <Plus className="mr-2 h-4 w-4 cursor-pointer" />
             Add User

@@ -51,7 +51,7 @@ export async function TopJobs() {
             </div>
           ))}
         </div>
-        <Link href="/ADMIN/jobs" className="cursor-pointer">
+        <Link href="/admin/jobs" className="cursor-pointer">
           <Button
             variant="outline"
             className="mt-4 w-full border-gray-200 text-gray-700 hover:bg-gray-50 cursor-pointer"

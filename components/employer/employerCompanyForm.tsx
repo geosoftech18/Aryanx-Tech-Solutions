@@ -74,7 +74,7 @@ export default function CompanyForm({
         const res = await updateCompany(userId, values);
         if (res) {
           toast.success("Company updated successfully");
-          router.push("/EMPLOYER");
+          router.push("/employer");
         } else {
           toast.error("Failed to update company");
         }
@@ -84,7 +84,7 @@ export default function CompanyForm({
         const res = await createCompanyForEmployer(userId, values);
         if (res) {
           toast.success("Company created successfully");
-          router.push("/EMPLOYER");
+          router.push("/employer");
         } else {
           toast.error("Failed to create company");
         }

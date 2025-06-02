@@ -90,7 +90,7 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link href={"/CANDIDATE/profile"}>
+              <Link href={"/candidate/profile"}>
                 <Button variant="outline" size="icon" className="rounded-full">
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -429,7 +429,7 @@ const CandidateDashboard: React.FC<CandidateDashboardProps> = async ({
               icon={<User className="h-5 w-5" />}
               title="Update Profile"
               description="Enhance your visibility to recruiters"
-              href="/CANDIDATE/profile"
+              href="/candidate/profile"
             />
             {/* <QuickActionCard
               icon={<Search className="h-5 w-5" />}

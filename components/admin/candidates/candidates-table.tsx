@@ -197,7 +197,7 @@ export function CandidatesTable() {
                   View
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-gray-700 hover:bg-gray-50 focus:bg-gray-50">
-                  <Link href={`/ADMIN/candidates/${candidate.id}`} className="cursor-pointer flex items-center">
+                  <Link href={`/admin/candidates/${candidate.id}`} className="cursor-pointer flex items-center">
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit
                   </Link>

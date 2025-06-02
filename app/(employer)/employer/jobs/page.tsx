@@ -74,7 +74,7 @@ export default function JobsPage() {
         } else {
           toast.error(response.error || "Failed to fetch jobs");
           if (response.error === "No company found for this employer") {
-            router.push("/EMPLOYER/company");
+            router.push("/employer/company");
           }
         }
       } catch (error) {
@@ -173,7 +173,7 @@ export default function JobsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Job Postings</h1>
-        <Link href="/EMPLOYER/jobs/create">
+        <Link href="/employer/jobs/create">
           <Button>Create New Job</Button>
         </Link>
       </div>
@@ -283,7 +283,7 @@ export default function JobsPage() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       onClick={() =>
-                        router.push(`/EMPLOYER/jobs/${job.id}`)
+                        router.push(`/employer/jobs/${job.id}`)
                       }
                     >
                       <Edit className="mr-2 h-4 w-4" />

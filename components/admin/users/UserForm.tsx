@@ -65,7 +65,7 @@ export default function UserForm({
         const res = await updateUser(userId, values);
         if (res) {
           toast.success("User updated successfully");
-          router.push("/ADMIN/users");
+          router.push("/admin/users");
         } else {
           toast.error("Failed to update user");
         }
@@ -74,7 +74,7 @@ export default function UserForm({
         const res = await createUserAdmin(values);
         if (res) {
           toast.success("User created successfully");
-          router.push("/ADMIN/users");
+          router.push("/admin/users");
         } else {
           toast.error("Failed to create user");
         }

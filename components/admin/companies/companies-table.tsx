@@ -96,7 +96,7 @@ export function CompaniesTable() {
             <Eye className="mr-2 h-4 w-4" /> View
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link href={`/ADMIN/companies/${company.id}`} className="flex items-center">
+            <Link href={`/admin/companies/${company.id}`} className="flex items-center">
               <Pencil className="mr-2 h-4 w-4" /> Edit
             </Link>
           </DropdownMenuItem>

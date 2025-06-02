@@ -226,7 +226,7 @@ const CandidateProfileCompletion = ({
       if (response.success) {
         toast.success(response.message);
         // Optionally redirect to profile page or dashboard
-        router.push('/CANDIDATE');
+        router.push('/candidate');
 
       } else {
         toast.error(response.message);

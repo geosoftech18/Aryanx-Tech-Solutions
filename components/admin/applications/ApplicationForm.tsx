@@ -93,7 +93,7 @@ export default function ApplicationForm({
         if (res.success) {
           toast.success("Application updated successfully");
           form.reset();
-          router.push("/ADMIN/applications");
+          router.push("/admin/applications");
         } else {
           toast.error(res.error || "Failed to update application");
         }
@@ -102,7 +102,7 @@ export default function ApplicationForm({
         if (res.success) {
           toast.success("Application created successfully");
           form.reset();
-          router.push("/ADMIN/applications");
+          router.push("/admin/applications");
         } else {
           toast.error(res.error || "Failed to create application");
         }

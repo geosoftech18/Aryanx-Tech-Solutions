@@ -242,8 +242,8 @@ const Signup = () => {
               {/* LinkedIn Signup Dropdown */}
               <LinkedInSignInDropdown
                 buttonLabel="Sign up with LinkedIn"
-                candidateCallbackUrl="/CANDIDATE"
-                employerCallbackUrl="/EMPLOYER"
+                candidateCallbackUrl="/candidate"
+                employerCallbackUrl="/employer"
               />
             </div>
 

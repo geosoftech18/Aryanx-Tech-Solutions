@@ -111,7 +111,7 @@ export default function JobForm({
         const result = await updateJob(jobId, data);
         if (result.success) {
           toast.success("Job updated successfully");
-          router.push("/EMPLOYER/jobs");
+          router.push("/employer/jobs");
         } else {
           toast.error(result.error || "Failed to update job");
         }
@@ -122,7 +122,7 @@ export default function JobForm({
         });
         if (result.success) {
           toast.success("Job created successfully");
-          router.push("/EMPLOYER/jobs");
+          router.push("/employer/jobs");
         } else {
           toast.error(result.error || "Failed to create job");
         }
