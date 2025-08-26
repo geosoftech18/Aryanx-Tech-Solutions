@@ -3,10 +3,13 @@
 import { getCompanyApplications } from "@/actions/application/employer-actions";
 import { getJobsByCompany } from "@/actions/jobs/get-jobs-by-company";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ResumeModal from "@/components/viewResumeModal";
 import { ApplicationStatus, Candidate, Certification, Education, Job, User, WorkExperience } from "@prisma/client";
 import { format } from "date-fns";
+import { Eye } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,6 +39,11 @@ export default function ApplicationsPage() {
   const [status, setStatus] = useState<ApplicationStatus | "ALL">("ALL");
   const [selectedJobId, setSelectedJobId] = useState<string | "ALL">("ALL");
   const [loading, setLoading] = useState(true);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [selectedCandidateResume, setSelectedCandidateResume] = useState<{
+    resumeUrl: string;
+    candidateName: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +87,17 @@ export default function ApplicationsPage() {
         return "bg-red-500";
       default:
         return "bg-gray-500";
+    }
+  };
+
+  const handleViewResume = (e: React.MouseEvent, candidateResume: string, candidateName: string) => {
+    e.stopPropagation(); // Prevent card click
+    if (candidateResume) {
+      setSelectedCandidateResume({
+        resumeUrl: candidateResume,
+        candidateName: candidateName,
+      });
+      setShowResumeModal(true);
     }
   };
 
@@ -161,14 +180,47 @@ export default function ApplicationsPage() {
                     </Badge>
                   ))}
                 </div>
-                <p className="text-sm text-gray-500">
-                  Applied on: {format(new Date(application.createdAt), "PPP")}
-                </p>
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-gray-500">
+                    Applied on: {format(new Date(application.createdAt), "PPP")}
+                  </p>
+                  {application.Candidate?.resume && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => 
+                        handleViewResume(
+                          e, 
+                          application.Candidate!.resume!, 
+                          `${application.Candidate!.user.firstname} ${application.Candidate!.user.lastname}`
+                        )
+                      }
+                      className="ml-2"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Resume
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Resume Modal */}
+      {selectedCandidateResume && (
+        <ResumeModal
+          isOpen={showResumeModal}
+          onClose={() => {
+            setShowResumeModal(false);
+            setSelectedCandidateResume(null);
+          }}
+          resumeUrl={selectedCandidateResume.resumeUrl}
+          candidateName={selectedCandidateResume.candidateName}
+          allowDownload={true}
+        />
+      )}
     </div>
   );
 }

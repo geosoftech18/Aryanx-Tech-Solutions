@@ -25,3 +25,7 @@ age filter on employer side (hold)
 filter by candidate type in applications in admin (hold)
 
 in candidate page in admin we have to add filteration with city state candidate type (hold)
+
+02/06/25
+1. resume upload not working in vercel environment. should work once linked with object storage.
+

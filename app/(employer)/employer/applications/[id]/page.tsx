@@ -17,6 +17,7 @@ import {
   updateApplicationStatus,
 } from "@/actions/application/employer-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ResumeModal from "@/components/viewResumeModal";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useSocket } from "@/hooks/useSocket";
 
@@ -60,6 +62,7 @@ export default function ApplicationDetailsPage({ params }: PageProps) {
   );
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [showResumeModal, setShowResumeModal] = useState(false);
   const { connected, emit } = useSocket();
 
   useEffect(() => {
@@ -165,7 +168,19 @@ export default function ApplicationDetailsPage({ params }: PageProps) {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Candidate Information</CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle>Candidate Information</CardTitle>
+              {application.Candidate.resume && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowResumeModal(true)}
+                  className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Resume
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -271,6 +286,17 @@ export default function ApplicationDetailsPage({ params }: PageProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Resume Modal */}
+      {application?.Candidate?.resume && (
+        <ResumeModal
+          isOpen={showResumeModal}
+          onClose={() => setShowResumeModal(false)}
+          resumeUrl={application.Candidate.resume}
+          candidateName={`${application.Candidate.user.firstname} ${application.Candidate.user.lastname}`}
+          allowDownload={true}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,9 @@
 import { Modal } from "./modal";
+import { Button } from "./button";
+import ResumeModal from "@/components/viewResumeModal";
 import { Application, Candidate, User, Job, Company } from "@prisma/client";
+import { Eye } from "lucide-react";
+import { useState } from "react";
 
 // ApplicationViewModal: shows application, candidate, job, and company details in a modal
 function ApplicationViewModal({
@@ -11,6 +15,8 @@ function ApplicationViewModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  
   if (!FullApplication) return null;
   const candidate = FullApplication.candidate ?? null;
   const candidateUser = candidate?.user ?? null;
@@ -50,16 +56,17 @@ function ApplicationViewModal({
           </div>
           <div>
             <span className="font-semibold">Resume:</span> {candidate?.resume ? (
-              <a
-                href={candidate.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowResumeModal(true)}
+                className="ml-2 text-blue-600 border-blue-300 hover:bg-blue-50"
               >
-                View
-              </a>
+                <Eye className="h-4 w-4 mr-2" />
+                View Resume
+              </Button>
             ) : (
-              "-"
+              "Not uploaded"
             )}
           </div>
         </div>
@@ -136,6 +143,17 @@ function ApplicationViewModal({
           </div>
         </div>
       </div>
+
+      {/* Resume Modal */}
+      {candidate?.resume && (
+        <ResumeModal
+          isOpen={showResumeModal}
+          onClose={() => setShowResumeModal(false)}
+          resumeUrl={candidate.resume}
+          candidateName={`${candidateUser?.firstname || ''} ${candidateUser?.lastname || ''}`}
+          allowDownload={true}
+        />
+      )}
     </Modal>
   );
 }

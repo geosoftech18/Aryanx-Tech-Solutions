@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export async function getCandidateProfileData(
   userId: string
-): Promise<z.infer<typeof formSchema> | null> {
+): Promise<(z.infer<typeof formSchema> & { candidateId: string }) | null> {
   try {
     const candidate = await prismadb.candidate.findUnique({
       where: { userId },
@@ -25,6 +25,7 @@ export async function getCandidateProfileData(
     const defaultDate = new Date();
 
     return {
+      candidateId: candidate.id,
       contact: candidate.contact ?? "",
       houseNo: candidate.Address?.houseNo ?? 0,
       locality: candidate.Address?.locality ?? "",
@@ -67,7 +68,7 @@ export async function getCandidateProfileData(
         companyName: exp.companyName,
       })),
       acknowledgement: false,
-      resume: undefined,
+      resume: candidate.resume || undefined,
     };
   } catch (error) {
     console.error("Error fetching candidate data:", error);

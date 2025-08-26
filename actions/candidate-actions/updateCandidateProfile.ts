@@ -1,29 +1,23 @@
 "use server";
 
-import { deleteFile, storeFile } from "@/lib/filestorage";
-import prismadb from "@/lib/prismaDB";
+import prismaDB from "@/lib/prismaDB";
 import { revalidatePath } from "next/cache";
 import { Candidate, CandidateType, Gender, LGBTQ, PwdCategory } from "@prisma/client";
 import { CandidateFormValues } from "@/components/candidate/formschema";
 
 export async function updateCandidateProfile(
   userId: string,
-  formData: FormData
+  values: CandidateFormValues,
+  resumeUrl?: string
 ): Promise<{
   success: boolean;
   message: string;
   candidate?: Candidate;
 }> {
-  let newResumePath = "";
-  let oldResumePath = "";
-
   try {
     if (!userId) {
       return { success: false, message: "User ID is required" };
     }
-
-    const resumeFile = formData.get("resume") as File;
-    const values: CandidateFormValues = JSON.parse(formData.get("values") as string);
 
     // Validate required special fields
     if (!values.gender) {
@@ -31,7 +25,7 @@ export async function updateCandidateProfile(
     }
 
     // Get existing candidate profile
-    const existingCandidate = await prismadb.candidate.findUnique({
+    const existingCandidate = await prismaDB.candidate.findUnique({
       where: { userId },
       include: {
         education: true,
@@ -48,45 +42,31 @@ export async function updateCandidateProfile(
       };
     }
 
-    // Handle resume update if new file is provided
-    if (resumeFile && resumeFile.size > 0) {
-      try {
-        const { filePath } = await storeFile(resumeFile, userId, "resume");
-        newResumePath = filePath;
-        oldResumePath = existingCandidate.resume || "";
-      } catch (error) {
-        console.error("Failed to store new resume:", error);
-        return {
-          success: false,
-          message: "Failed to upload new resume. Please try again.",
-        };
-      }
-    }
-
     // Helper function to safely parse experience
-    const parseExperience = (expString: string) => {
-      const matches = expString.match(/\d+/);
+    const parseExperience = (expString: string | number): number => {
+      if (typeof expString === "number") return expString;
+      const matches = expString.toString().match(/\d+/);
       return matches ? parseInt(matches[0], 10) : 0;
     };
 
     // Delete existing related records
-    await prismadb.$transaction([
-      prismadb.education.deleteMany({ where: { candidateId: existingCandidate.id } }),
-      prismadb.certification.deleteMany({ where: { candidateId: existingCandidate.id } }),
-      prismadb.workExperience.deleteMany({ where: { candidateId: existingCandidate.id } }),
-      prismadb.address.deleteMany({ where: { candidateId: existingCandidate.id } }),
+    await prismaDB.$transaction([
+      prismaDB.education.deleteMany({ where: { candidateId: existingCandidate.id } }),
+      prismaDB.certification.deleteMany({ where: { candidateId: existingCandidate.id } }),
+      prismaDB.workExperience.deleteMany({ where: { candidateId: existingCandidate.id } }),
+      prismaDB.address.deleteMany({ where: { candidateId: existingCandidate.id } }),
     ]);
 
     // Update candidate profile
-    const updatedCandidate = await prismadb.candidate.update({
+    const updatedCandidate = await prismaDB.candidate.update({
       where: { userId },
       data: {
         contact: values.contact,
-        YOE: values.YOE,
+        YOE: parseExperience(values.YOE),
         skills: values.skills,
         Bio: values.Bio,
         DOB: values.DOB,
-        resume: newResumePath || existingCandidate.resume,
+        resume: resumeUrl || existingCandidate.resume, // Use new resume URL if provided, otherwise keep existing
         gender: values.gender as Gender,
         candidateType: values.candidateType as CandidateType || null,
         pwdCategory: values.pwdCategory as PwdCategory || null,
@@ -131,7 +111,7 @@ export async function updateCandidateProfile(
 
     // Update address separately
     if (existingCandidate.Address) {
-      await prismadb.address.update({
+      await prismaDB.address.update({
         where: { id: existingCandidate.Address.id },
         data: {
           houseNo: values.houseNo,
@@ -143,7 +123,7 @@ export async function updateCandidateProfile(
         },
       });
     } else {
-      await prismadb.address.create({
+      await prismaDB.address.create({
         data: {
           houseNo: values.houseNo,
           locality: values.locality,
@@ -157,7 +137,7 @@ export async function updateCandidateProfile(
     }
 
     // Update user name fields
-    await prismadb.user.update({
+    await prismaDB.user.update({
       where: { id: userId },
       data: {
         firstname: values.firstname,
@@ -166,18 +146,9 @@ export async function updateCandidateProfile(
       },
     });
 
-    // Delete old resume file if new one was uploaded
-    if (oldResumePath && newResumePath) {
-      try {
-        await deleteFile(oldResumePath);
-      } catch (error) {
-        console.error("Error deleting old resume:", error);
-        // Don't return error as the update was successful
-      }
-    }
-
     revalidatePath("/candidate/profile");
     revalidatePath("/dashboard");
+    revalidatePath("/candidate");
 
     return {
       success: true,
@@ -186,15 +157,6 @@ export async function updateCandidateProfile(
     };
   } catch (error) {
     console.error("Error updating candidate profile:", error);
-    
-    // Clean up new resume file if it was uploaded but update failed
-    if (newResumePath) {
-      try {
-        await deleteFile(newResumePath);
-      } catch (cleanupError) {
-        console.error("Error cleaning up new resume file:", cleanupError);
-      }
-    }
     
     return {
       success: false,

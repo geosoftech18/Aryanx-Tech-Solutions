@@ -1,6 +1,7 @@
 "use client";
 import { createCandidateProfile } from "@/actions/candidate-actions/createCandidateProfile";
 import { updateCandidateProfile } from "@/actions/candidate-actions/updateCandidateProfile";
+import { uploadResumeAction } from "@/actions/digitalOcean/upload-resume";
 import {
   Accordion,
   AccordionContent,
@@ -15,13 +16,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-  import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-  } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -63,6 +64,8 @@ import {
   School,
   Trash2,
   Upload,
+  Eye,
+  FileText,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -77,10 +80,11 @@ import { DatePicker } from "@/components/ui/datePicker";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import InputTags from "../inputTags";
+import { ResumeModal } from "../viewResumeModal";
 
 interface CandidateProfileCompletionProps {
   userId: string;
-  initialData?: z.infer<typeof formSchema> | null;
+  initialData?: (z.infer<typeof formSchema> & { candidateId?: string });
   mode?: 'create' | 'update';
 }
 
@@ -98,6 +102,7 @@ const CandidateProfileCompletion = ({
 }: CandidateProfileCompletionProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [showResumeModal, setShowResumeModal] = useState(false);
   const router = useRouter();
 
   // States for location dropdowns
@@ -106,7 +111,6 @@ const CandidateProfileCompletion = ({
   const [, setAvailableStates] = useState<
     Array<{ id: string; name: string }>
   >([]);
-
   // State for popover open/close
   const [countryOpen, setCountryOpen] = useState(false);
 
@@ -204,39 +208,111 @@ const CandidateProfileCompletion = ({
     setIsLoading(true);
 
     try {
-      // Create FormData for submission
-      const formData = new FormData();
-      
-      // Add resume file if present
-      if (resumeFile) {
-        formData.append('resume', resumeFile);
-      }
+      let resumeUrl = "";
 
-
-      // Add formatted values to FormData
-      formData.append('values', JSON.stringify(values));
-      let response;
       if (mode === 'create') {
-        response = await createCandidateProfile(userId, formData);
-        console.log(response, "response");
-      } else {
-        response = await updateCandidateProfile(userId, formData);
-      }
+        // CREATE MODE: Create profile first, then upload resume
+        
+        // Step 1: Create candidate profile without resume first
+        toast.loading("Creating your profile...", { id: "profile-creation" });
+        
+        const profileResponse = await createCandidateProfile(userId, values);
+        if (!profileResponse.success) {
+          toast.error(profileResponse.message, { id: "profile-creation" });
+          return;
+        }
 
-      if (response.success) {
-        toast.success(response.message);
-        // Optionally redirect to profile page or dashboard
+        const candidateId = profileResponse.candidate.id;
+        toast.success("Profile created successfully", { id: "profile-creation" });
+
+        // Step 2: Upload resume if provided
+        if (resumeFile) {
+          toast.loading("Uploading resume...", { id: "resume-upload" });
+          
+          const resumeFormData = new FormData();
+          resumeFormData.append('resume', resumeFile);
+          resumeFormData.append('candidateId', candidateId);
+          
+          const uploadResponse = await uploadResumeAction(resumeFormData);
+          
+          if (!uploadResponse.success) {
+            toast.error(`Resume upload failed: ${uploadResponse.error}`, { id: "resume-upload" });
+            // Profile was created but resume failed - still show as success
+            toast.success("Profile created successfully! Please try uploading your resume again from your profile page.", { id: "final-message" });
+            router.push('/candidate');
+            return;
+          }
+
+          resumeUrl = uploadResponse.fileData?.resumeUrl || "";
+          toast.success("Resume uploaded successfully!", { id: "resume-upload" });
+          
+          // Update the candidate profile with the resume URL
+          await updateCandidateProfile(userId, values, resumeUrl);
+        }
+
+        toast.success("Profile and resume uploaded successfully!", { id: "final-success" });
         router.push('/candidate');
 
       } else {
-        toast.error(response.message);
+        // UPDATE MODE: Handle resume upload if new file provided, then update profile
+        
+        if (resumeFile) {
+          // Get candidateId from initialData
+          console.log('Initial Data:', initialData);
+          const candidateId = initialData?.candidateId;
+          if (!candidateId) {
+            toast.error("Candidate ID not found. Please refresh and try again.");
+            return;
+          }
+
+          toast.loading("Uploading new resume...", { id: "resume-upload" });
+          
+          const resumeFormData = new FormData();
+          resumeFormData.append('resume', resumeFile);
+          resumeFormData.append('candidateId', candidateId);
+          
+          const uploadResponse = await uploadResumeAction(resumeFormData);
+          
+          if (!uploadResponse.success) {
+            toast.error(`Resume upload failed: ${uploadResponse.error}`, { id: "resume-upload" });
+            // Continue with profile update even if resume upload fails
+          } else {
+            resumeUrl = uploadResponse.fileData?.resumeUrl || "";
+            toast.success("Resume uploaded successfully!", { id: "resume-upload" });
+          }
+        }
+
+        // Update profile with or without new resume URL
+        toast.loading("Updating your profile...", { id: "profile-update" });
+        
+        const response = await updateCandidateProfile(userId, values, resumeUrl);
+        
+        if (response.success) {
+          toast.success(response.message, { id: "profile-update" });
+          router.push('/candidate');
+        } else {
+          toast.error(response.message, { id: "profile-update" });
+        }
       }
+
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error(mode === 'create' 
-        ? "There was an error creating your profile. Please try again."
-        : "There was an error updating your profile. Please try again."
-      );
+      
+      // Provide specific error messages based on the error type
+      if (error instanceof Error) {
+        if (error.message.includes('resume')) {
+          toast.error("Resume upload failed. Please try again with a different file.");
+        } else if (error.message.includes('network')) {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          toast.error(`Error: ${error.message}`);
+        }
+      } else {
+        toast.error(mode === 'create' 
+          ? "There was an error creating your profile. Please try again."
+          : "There was an error updating your profile. Please try again."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -1128,6 +1204,31 @@ const CandidateProfileCompletion = ({
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
+                    {/* View Current Resume Button for Update Mode */}
+                    {mode === 'update' && initialData?.resume && (
+                      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <FileText className="h-5 w-5 text-blue-600 mr-2" />
+                            <span className="text-sm text-blue-800">Current resume uploaded</span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowResumeModal(true)}
+                            className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Resume
+                          </Button>
+                        </div>
+                        <p className="text-xs text-blue-600 mt-1">
+                          Upload a new file below to replace your current resume
+                        </p>
+                      </div>
+                    )}
+
                     <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                       <div className="text-center">
                         <Upload className="h-10 w-10 text-gray-400 mb-4 mx-auto" />
@@ -1341,6 +1442,18 @@ const CandidateProfileCompletion = ({
           </div>
         </div>
       </div>
+
+      {/* Resume Modal */}
+      {initialData?.resume && (
+        <ResumeModal
+          isOpen={showResumeModal}
+          onClose={() => setShowResumeModal(false)}
+          resumeUrl={initialData.resume}
+          candidateName={`${initialData.firstname} ${initialData.lastname}`}
+          allowDownload={true}
+        />
+      )}
+
     </div>
   );
 };

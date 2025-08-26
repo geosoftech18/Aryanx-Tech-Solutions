@@ -32,6 +32,19 @@ export default async function ProfilePage() {
     );
   }
 
+  if (!initialData) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Profile Not Found</h1>
+          <p className="mt-2 text-gray-600">No profile data available.</p>
+        </div>
+      </div>
+    );
+  }
+
+  console.log(initialData);
+
   return (
     <CandidateProfileCompletion
       userId={session.user.id}
