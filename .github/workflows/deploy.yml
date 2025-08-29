@@ -27,14 +27,16 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install dependencies (for CI build)
+        # install dev deps too so CI can build and `npm run build` works
         run: npm ci --legacy-peer-deps
 
       - name: Run linter
         run: npm run lint
 
-      - name: Build
+      - name: Build (run in CI only)
         run: npm run build
+
       - name: Prepare SSH
         if: ${{ env.DO_SSH_PRIVATE_KEY != '' }}
         run: |
@@ -45,7 +47,7 @@ jobs:
           ssh-keyscan -p $SERVER_PORT -H $SERVER_HOST >> ~/.ssh/known_hosts
         shell: bash
 
-      - name: Rsync files to Droplet
+      - name: Rsync files to Droplet (include build artifacts)
         run: |
           # fail early if required vars are missing
           if [ -z "$DEPLOY_PATH" ]; then echo "ERROR: DEPLOY_PATH is empty"; exit 1; fi
@@ -53,8 +55,12 @@ jobs:
           if [ -z "$SERVER_HOST" ]; then echo "ERROR: SERVER_HOST is empty"; exit 1; fi
 
           REMOTE="$SERVER_USER@$SERVER_HOST:$DEPLOY_PATH"
-          echo "Syncing to $REMOTE"
+          echo "Ensuring remote path exists and syncing to $REMOTE"
 
+          # ensure remote directory exists
+          ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" -o StrictHostKeyChecking=yes "$SERVER_USER@$SERVER_HOST" "mkdir -p '$DEPLOY_PATH'"
+
+          # sync repository including .next build output, but exclude node_modules and local dev artifacts
           rsync -avz --delete \
             --exclude='.git' \
             --exclude='node_modules' \
@@ -64,18 +70,19 @@ jobs:
             ./ "$REMOTE"
         shell: bash
 
-      - name: Run remote deploy commands
+      - name: Run remote deploy commands (install runtime deps including dev deps used by start)
         env:
           RESTART_COMMAND: ${{ env.RESTART_COMMAND }}
         run: |
-          # Install production deps on remote using legacy peer deps to avoid ERESOLVE
+          # Note: build already happened in CI. Install dependencies on the server (including dev deps required by `npm run start`)
           ssh -i ~/.ssh/id_rsa -p $SERVER_PORT -o StrictHostKeyChecking=yes $SERVER_USER@$SERVER_HOST "
             set -e
             cd '$DEPLOY_PATH'
+            # install all deps (dev + prod) using legacy peer deps to avoid ERESOLVE failures
             if [ -f package-lock.json ] || [ -f pnpm-lock.yaml ] || [ -f yarn.lock ]; then
-              # npm: use legacy-peer-deps and omit dev dependencies
-              npm ci --omit=dev --legacy-peer-deps || true
+              npm ci --legacy-peer-deps
             fi
+            # restart the app (uses RESTART_COMMAND or default pm2 restart all)
             $RESTART_COMMAND
           "
         shell: bash
