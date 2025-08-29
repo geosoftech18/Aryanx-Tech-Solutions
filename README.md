@@ -49,3 +49,27 @@ Tech Stack Requirements:
 - TypeScript throughout the application
 
 The application should have all the pages listed in the provided sitemap with similar organization and professional styling.
+
+
+
+Here's a step-by-step guide to making a change to any repository in Geosoftech.
+ 
+1. Start with an Issue
+ 
+Before you begin, create a new GitHub issue. This helps everyone track the problem you're solving or the feature you're adding.
+ 
+2. Create Your Branch
+ 
+You can create a new development branch directly from the issue page. Give your branch a clear name that reflects your work, like fix/button-alignment or feature/user-profile. Alternatively, if you provide a valid title on the GitHub issue, the auto-suggested branch name can be reviewed and used. 
+ 
+3. Make and Commit Your Changes
+ 
+Work on your new branch, making your code changes and committing them often. Remember to write clear commit messages that explain what you did. Once you're done, push your branch to GitHub.
+ 
+4. Submit a Pull Request
+ 
+When your changes are ready, open a pull request (PR). Your PR description should reference the issue you're closing and summarize the changes you made. Get the review done with your leads.
+ 
+5. Get It Merged
+ 
+Your lead will review your PR and provide feedback. Once it's approved, your changes will be merged into the main branch. Do not forget to delete the fix/feature branch after it has been merged.
