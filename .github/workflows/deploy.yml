@@ -68,5 +68,14 @@ jobs:
         env:
           RESTART_COMMAND: ${{ env.RESTART_COMMAND }}
         run: |
-          ssh -i ~/.ssh/id_rsa -p $SERVER_PORT -o StrictHostKeyChecking=yes $SERVER_USER@$SERVER_HOST "set -e; cd '$DEPLOY_PATH'; if [ -f package-lock.json ] || [ -f pnpm-lock.yaml ] || [ -f yarn.lock ]; then npm ci --production || true; fi; $RESTART_COMMAND"
+          # Install production deps on remote using legacy peer deps to avoid ERESOLVE
+          ssh -i ~/.ssh/id_rsa -p $SERVER_PORT -o StrictHostKeyChecking=yes $SERVER_USER@$SERVER_HOST "
+            set -e
+            cd '$DEPLOY_PATH'
+            if [ -f package-lock.json ] || [ -f pnpm-lock.yaml ] || [ -f yarn.lock ]; then
+              # npm: use legacy-peer-deps and omit dev dependencies
+              npm ci --omit=dev --legacy-peer-deps || true
+            fi
+            $RESTART_COMMAND
+          "
         shell: bash
